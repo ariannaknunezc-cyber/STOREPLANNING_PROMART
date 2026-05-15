@@ -1,84 +1,114 @@
-let dataMaestra = [];
-let miGrafico;
+let rawData = [];
+let chartInstance = null;
 
 document.getElementById('excelInput').addEventListener('change', function(e) {
     const reader = new FileReader();
     reader.onload = function(evt) {
         const data = new Uint8Array(evt.target.result);
         const workbook = XLSX.read(data, {type: 'array'});
-        dataMaestra = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+        rawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
         
-        if(dataMaestra.length > 0) {
-            document.getElementById('controls').style.display = 'block';
-            inicializarFiltros();
+        if(rawData.length > 0) {
+            document.getElementById('dynamic-controls').style.display = 'block';
+            logic_initPaises();
         }
     };
     reader.readAsArrayBuffer(e.target.files[0]);
 });
 
-function inicializarFiltros() {
-    // Cargar Países
-    const paises = [...new Set(dataMaestra.map(x => x.Pais))];
-    const paisSel = document.getElementById('paisFilter');
-    paisSel.innerHTML = paises.map(p => `<option value="${p}">${p}</option>`).join('');
-
-    // Cargar Áreas
-    const areas = [...new Set(dataMaestra.map(x => x.Area_Comercial))];
-    const areaSel = document.getElementById('areaFilter');
-    areaSel.innerHTML = '<option value="all">TODAS LAS AREAS</option>' + 
-                        areas.map(a => `<option value="${a}">${a}</option>`).join('');
-
-    actualizarListaTiendas();
+function logic_initPaises() {
+    const paises = [...new Set(rawData.map(item => item.Pais))];
+    const select = document.getElementById('paisFilter');
+    select.innerHTML = paises.map(p => `<option value="${p}">${p}</option>`).join('');
+    logic_updateStores();
 }
 
-function actualizarListaTiendas() {
-    const pais = document.getElementById('paisFilter').value;
-    const tiendas = [...new Set(dataMaestra.filter(x => x.Pais === pais).map(x => x.Tienda))];
-    const list = document.getElementById('tiendaChecklist');
+function logic_updateStores() {
+    const selectedPais = document.getElementById('paisFilter').value;
+    // Filtrar todas las tiendas que pertenecen al país seleccionado
+    const tiendasFiltradas = [...new Set(rawData
+        .filter(item => item.Pais === selectedPais)
+        .map(item => item.Tienda))];
     
-    list.innerHTML = tiendas.map((t, i) => `
-        <label><input type="checkbox" class="t-check" value="${t}" checked onchange="renderizarGrafico()"> ${t}</label>
+    const checklist = document.getElementById('tiendaChecklist');
+    checklist.innerHTML = tiendasFiltradas.map((tienda, index) => `
+        <label>
+            <input type="checkbox" class="store-cb" value="${tienda}" onchange="logic_renderChart()" checked>
+            ${tienda}
+        </label>
     `).join('');
-    
-    renderizarGrafico();
+
+    logic_renderChart();
 }
 
-function renderizarGrafico() {
-    const tiendasSel = Array.from(document.querySelectorAll('.t-check:checked')).map(x => x.value);
-    const areaSel = document.getElementById('areaFilter').value;
+function logic_renderChart() {
+    const selectedStores = Array.from(document.querySelectorAll('.store-cb:checked')).map(cb => cb.value);
     const metrica = document.getElementById('metricaFilter').value;
+    const legendContainer = document.getElementById('chart-legend');
+    
+    // Si no hay tiendas seleccionadas, limpiar gráfico
+    if (selectedStores.length === 0) {
+        if(chartInstance) chartInstance.destroy();
+        legendContainer.innerHTML = '';
+        return;
+    }
 
-    let filtrado = dataMaestra.filter(x => tiendasSel.includes(x.Tienda));
-    if(areaSel !== 'all') filtrado = filtrado.filter(x => x.Area_Comercial === areaSel);
+    // Definir colores corporativos
+    const colorPalette = ['#F15A22', '#38bdf8', '#fbbf24', '#10b981', '#f43f5e', '#a855f7', '#06b6d4'];
+    
+    // Obtener áreas únicas (eje X) de las tiendas seleccionadas
+    const dataForChart = rawData.filter(item => selectedStores.includes(item.Tienda));
+    const areasX = [...new Set(dataForChart.map(item => item.Area_Comercial))];
 
-    if (miGrafico) miGrafico.destroy();
+    const datasets = selectedStores.map((tienda, i) => {
+        const color = colorPalette[i % colorPalette.length];
+        const storeRows = dataForChart.filter(r => r.Tienda === tienda);
+        
+        // Mapear valores según el eje X
+        const values = areasX.map(area => {
+            const row = storeRows.find(r => r.Area_Comercial === area);
+            return row ? row[metrica] : 0;
+        });
 
-    const colores = ['#F15A22', '#38bdf8', '#fbbf24', '#10b981', '#f43f5e', '#a855f7'];
-    const datasets = tiendasSel.map((tienda, i) => {
-        const puntos = filtrado.filter(x => x.Tienda === tienda);
         return {
             label: tienda,
-            data: puntos.map(x => x[metrica]),
-            borderColor: colores[i % colores.length],
-            borderWidth: 4,
+            data: values,
+            borderColor: color,
+            backgroundColor: color,
             tension: 0.3,
+            borderWidth: 3,
             pointRadius: 5
         };
     });
 
-    const labels = [...new Set(filtrado.map(x => x.Area_Comercial))];
+    // Actualizar Leyenda Visual
+    legendContainer.innerHTML = datasets.map(ds => `
+        <div class="legend-item">
+            <div class="legend-color" style="background:${ds.borderColor}"></div>
+            ${ds.label}
+        </div>
+    `).join('');
 
-    const ctx = document.getElementById('lineChart').getContext('2d');
-    miGrafico = new Chart(ctx, {
+    if (chartInstance) chartInstance.destroy();
+
+    const ctx = document.getElementById('mainChart').getContext('2d');
+    chartInstance = new Chart(ctx, {
         type: 'line',
-        data: { labels, datasets },
+        data: { labels: areasX, datasets: datasets },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: true, labels: { color: '#fff' } } },
+            plugins: { legend: { display: false } },
             scales: {
-                y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
-                x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: '#1e293b' },
+                    ticks: { color: '#94a3b8' } 
+                },
+                x: { 
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8' } 
+                }
             }
         }
     });
