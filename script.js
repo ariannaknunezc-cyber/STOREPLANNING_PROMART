@@ -1,87 +1,85 @@
-let db = [];
-let chart;
+let dataMaestra = [];
+let miGrafico;
 
-document.getElementById('excelFile').addEventListener('change', function(e) {
+document.getElementById('excelInput').addEventListener('change', function(e) {
     const reader = new FileReader();
     reader.onload = function(evt) {
         const data = new Uint8Array(evt.target.result);
-        const wb = XLSX.read(data, {type: 'array'});
-        db = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+        const workbook = XLSX.read(data, {type: 'array'});
+        dataMaestra = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
         
-        if(db.length > 0) {
-            document.getElementById('dynamic-controls').style.display = 'block';
-            initFilters();
+        if(dataMaestra.length > 0) {
+            document.getElementById('controls').style.display = 'block';
+            inicializarFiltros();
         }
     };
     reader.readAsArrayBuffer(e.target.files[0]);
 });
 
-function initFilters() {
-    // 1. Cargar Países
-    const paises = [...new Set(db.map(x => x.Pais))];
-    const paisSel = document.getElementById('paisSel');
+function inicializarFiltros() {
+    // Cargar Países
+    const paises = [...new Set(dataMaestra.map(x => x.Pais))];
+    const paisSel = document.getElementById('paisFilter');
     paisSel.innerHTML = paises.map(p => `<option value="${p}">${p}</option>`).join('');
-    
-    // 2. Cargar Áreas
-    const areas = [...new Set(db.map(x => x.Area_Comercial))];
-    const areaSel = document.getElementById('areaSel');
-    areaSel.innerHTML = `<option value="all">TODAS LAS AREAS</option>` + 
+
+    // Cargar Áreas
+    const areas = [...new Set(dataMaestra.map(x => x.Area_Comercial))];
+    const areaSel = document.getElementById('areaFilter');
+    areaSel.innerHTML = '<option value="all">TODAS LAS AREAS</option>' + 
                         areas.map(a => `<option value="${a}">${a}</option>`).join('');
 
-    filterStores();
+    actualizarListaTiendas();
 }
 
-function filterStores() {
-    const pSel = document.getElementById('paisSel').value;
-    const tiendas = [...new Set(db.filter(x => x.Pais === pSel).map(x => x.Tienda))];
-    const checklist = document.getElementById('store-checklist');
+function actualizarListaTiendas() {
+    const pais = document.getElementById('paisFilter').value;
+    const tiendas = [...new Set(dataMaestra.filter(x => x.Pais === pais).map(x => x.Tienda))];
+    const list = document.getElementById('tiendaChecklist');
     
-    checklist.innerHTML = tiendas.map(t => `
-        <label><input type="checkbox" class="st-check" value="${t}" checked> ${t}</label>
+    list.innerHTML = tiendas.map((t, i) => `
+        <label><input type="checkbox" class="t-check" value="${t}" checked onchange="renderizarGrafico()"> ${t}</label>
     `).join('');
     
-    updateChart();
+    renderizarGrafico();
 }
 
-function updateChart() {
-    const selectedStores = Array.from(document.querySelectorAll('.st-check:checked')).map(x => x.value);
-    const selectedArea = document.getElementById('areaSel').value;
-    const metric = document.getElementById('metricSel').value;
+function renderizarGrafico() {
+    const tiendasSel = Array.from(document.querySelectorAll('.t-check:checked')).map(x => x.value);
+    const areaSel = document.getElementById('areaFilter').value;
+    const metrica = document.getElementById('metricaFilter').value;
 
-    let filtered = db.filter(x => selectedStores.includes(x.Tienda));
-    
-    if(selectedArea !== 'all') {
-        filtered = filtered.filter(x => x.Area_Comercial === selectedArea);
-    }
+    let filtrado = dataMaestra.filter(x => tiendasSel.includes(x.Tienda));
+    if(areaSel !== 'all') filtrado = filtrado.filter(x => x.Area_Comercial === areaSel);
 
-    // Preparar Datos para Líneas por Tienda
-    if (chart) chart.destroy();
-    
-    const datasets = selectedStores.map((store, i) => {
-        const storeData = filtered.filter(x => x.Tienda === store);
+    if (miGrafico) miGrafico.destroy();
+
+    const colores = ['#F15A22', '#38bdf8', '#fbbf24', '#10b981', '#f43f5e', '#a855f7'];
+    const datasets = tiendasSel.map((tienda, i) => {
+        const puntos = filtrado.filter(x => x.Tienda === tienda);
         return {
-            label: store,
-            data: storeData.map(x => x[metric]),
-            borderColor: i % 2 === 0 ? '#F15A22' : '#ffffff',
+            label: tienda,
+            data: puntos.map(x => x[metrica]),
+            borderColor: colores[i % colores.length],
             borderWidth: 4,
-            tension: 0.4,
-            pointRadius: 6
+            tension: 0.3,
+            pointRadius: 5
         };
     });
 
-    const labels = [...new Set(filtered.map(x => x.Area_Comercial))];
+    const labels = [...new Set(filtrado.map(x => x.Area_Comercial))];
 
-    chart = new Chart(document.getElementById('mainChart'), {
+    const ctx = document.getElementById('lineChart').getContext('2d');
+    miGrafico = new Chart(ctx, {
         type: 'line',
         data: { labels, datasets },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: { legend: { display: true, labels: { color: '#fff' } } },
             scales: {
-                y: { grid: { color: '#333' }, ticks: { color: '#fff' } },
-                x: { grid: { display: false }, ticks: { color: '#fff' } }
-            },
-            plugins: { legend: { labels: { color: '#fff' } } }
+                y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+            }
         }
     });
 }
