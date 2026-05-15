@@ -24,14 +24,14 @@
 
 <section id="fichas" class="section">
     <h2 class="section-title">01. Fichas de <span>Tienda Ideal</span></h2>
-    <p class="section-desc">Documentación técnica estandarizada para el diseño de prototipos según formato de tienda y proveedor de equipamiento.</p>
+    <p class="section-desc">Documentación técnica de prototipos según formato de tienda y equipamiento.</p>
     <div class="grid-buttons">
         <a href="LINK_1" class="btn-card" target="_blank">
-            <i class="fa-solid fa-building-circle-check"></i>
+            <i class="fa-solid fa-store"></i>
             <div><strong>TIENDA ALTA:</strong><br>Picada 5.00 HMY</div>
         </a>
         <a href="LINK_2" class="btn-card" target="_blank">
-            <i class="fa-solid fa-building-flag"></i>
+            <i class="fa-solid fa-shop"></i>
             <div><strong>TIENDA BAJA:</strong><br>Picada 7.50 JRM</div>
         </a>
     </div>
@@ -39,25 +39,23 @@
 
 <section id="bim" class="section gray">
     <h2 class="section-title">02. Repositorio <span>BIM</span></h2>
-    <p class="section-desc">Acceso a familias paramétricas y plantillas oficiales de Revit para la unificación de criterios en el modelado de activos.</p>
+    <p class="section-desc">Acceso a familias paramétricas y plantillas oficiales de Revit.</p>
     <div class="grid-bim">
-        <a href="LINK_3" class="bim-btn" target="_blank"><i class="fa-solid fa-layer-group"></i> A. PLANTILLA BASE</a>
-        <a href="LINK_4" class="bim-btn" target="_blank"><i class="fa-solid fa-boxes-stacked"></i> B. FAMILIAS RACKS HMY</a>
+        <a href="LINK_3" class="bim-btn" target="_blank"><i class="fa-solid fa-cubes"></i> A. PLANTILLA BASE</a>
+        <a href="LINK_4" class="bim-btn" target="_blank"><i class="fa-solid fa-truck-ramp-box"></i> B. FAMILIAS RACKS HMY</a>
         <a href="LINK_5" class="bim-btn" target="_blank"><i class="fa-solid fa-warehouse"></i> C. FAMILIAS RACKS JRM</a>
-        <a href="LINK_6" class="bim-btn" target="_blank"><i class="fa-solid fa-table-cells"></i> D. FAMILIAS GONDOLAS</a>
-        <a href="LINK_7" class="bim-btn" target="_blank"><i class="fa-solid fa-chair"></i> E. FAMILIAS CARPINTERIA</a>
-        <a href="LINK_8" class="bim-btn" target="_blank"><i class="fa-solid fa-plug-circle-bolt"></i> F. INSTALACIONES ELECTRICAS</a>
+        <a href="LINK_6" class="bim-btn" target="_blank"><i class="fa-solid fa-table-cells-large"></i> D. FAMILIAS GONDOLAS</a>
+        <a href="LINK_7" class="bim-btn" target="_blank"><i class="fa-solid fa-couch"></i> E. FAMILIAS CARPINTERIA</a>
+        <a href="LINK_8" class="bim-btn" target="_blank"><i class="fa-solid fa-bolt-lightning"></i> F. INSTALACIONES ELECTRICAS</a>
     </div>
 </section>
 
 <section id="acuerdos" class="section">
     <h2 class="section-title">03. Acuerdos <span>del Área</span></h2>
-    <p class="section-desc">Repositorio de actas, acuerdos de comité y lineamientos estratégicos establecidos para la gestión de proyectos del área.</p>
-    <div class="left-align">
-        <a href="LINK_9" target="_blank" class="main-btn">
-            <i class="fa-solid fa-handshake"></i> Ir a Actas de Acuerdos
-        </a>
-    </div>
+    <p class="section-desc">Registro oficial de actas y compromisos estratégicos del equipo.</p>
+    <a href="LINK_9" target="_blank" class="main-btn">
+        <i class="fa-solid fa-file-signature"></i> Ir a Actas de Acuerdos
+    </a>
 </section>
 
 <section id="analisis" class="section dark">
@@ -65,24 +63,24 @@
     <div class="dashboard-container">
         <aside class="sidebar">
             <div class="filter-group">
-                <label><i class="fa-solid fa-file-arrow-up"></i> Cargar Formato Excel</label>
+                <label><i class="fa-solid fa-upload"></i> Cargar Excel</label>
                 <input type="file" id="excelInput" accept=".xlsx, .xls">
             </div>
 
             <div id="dynamic-controls" style="display:none">
                 <div class="filter-group">
-                    <label><i class="fa-solid fa-earth-americas"></i> Elegir País</label>
+                    <label><i class="fa-solid fa-globe"></i> País</label>
                     <select id="paisFilter" onchange="logic_updateStores()"></select>
                 </div>
                 <div class="filter-group">
-                    <label><i class="fa-solid fa-shop"></i> Comparar Tiendas</label>
+                    <label><i class="fa-solid fa-list-check"></i> Seleccionar Tiendas</label>
                     <div id="tiendaChecklist" class="checklist-container"></div>
                 </div>
                 <div class="filter-group">
-                    <label><i class="fa-solid fa-chart-line"></i> Métrica de Análisis</label>
+                    <label><i class="fa-solid fa-ruler-combined"></i> Métrica</label>
                     <select id="metricaFilter" onchange="logic_renderChart()">
-                        <option value="m2">Superficie (m²)</option>
-                        <option value="m3">Volumen (m³)</option>
+                        <option value="m2">Metros Cuadrados (m²)</option>
+                        <option value="m3">Metros Cúbicos (m³)</option>
                     </select>
                 </div>
             </div>
@@ -99,15 +97,13 @@
 
 <section id="solicitudes" class="section">
     <h2 class="section-title">05. Solicitudes de <span>Cambios</span></h2>
-    <p class="section-desc">Canal oficial para la solicitud de modificaciones en fichas técnicas, catálogos BIM o actualizaciones de layout.</p>
-    <div class="left-align">
-        <a href="LINK_10" target="_blank" class="main-btn orange-btn">
-            <i class="fa-solid fa-file-pen"></i> Formulario de Solicitudes
-        </a>
-    </div>
+    <p class="section-desc">Canal oficial para requerimientos de modificación técnica.</p>
+    <a href="LINK_10" target="_blank" class="main-btn orange-btn">
+        <i class="fa-solid fa-pen-to-square"></i> Formulario de Solicitudes
+    </a>
 </section>
 
-<footer>PROMART HOMECENTER &copy; 2026 — Store Planning Intelligence</footer>
+<footer>PROMART HOMECENTER &copy; 2026</footer>
 
 <script src="script.js"></script>
 </body>
