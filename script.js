@@ -1,38 +1,69 @@
-const ctx = document.getElementById('lineChart').getContext('2d');
-let lineChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: ['Tienda A', 'Tienda B', 'Tienda C'],
-        datasets: [
-            { label: 'm²', data: [1200, 1900, 1500], borderColor: '#F15A22', tension: 0.3 },
-            { label: 'm³', data: [4000, 7000, 5500], borderColor: '#FFFFFF', tension: 0.3 }
-        ]
-    },
-    options: {
-        responsive: true,
-        plugins: { legend: { labels: { color: '#fff' } } },
-        scales: {
-            y: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } },
-            x: { ticks: { color: '#fff' } }
+let storeData = [];
+let chart;
+
+const ctx = document.getElementById('storeChart').getContext('2d');
+
+function initChart(labels, values, labelName) {
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+        type: 'bar', // Cambiado a barras para mejor comparación de tiendas individuales
+        data: {
+            labels: labels,
+            datasets: [{
+                label: labelName,
+                data: values,
+                backgroundColor: '#F15A22',
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { labels: { color: '#fff' } } },
+            scales: {
+                y: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                x: { ticks: { color: '#fff' } }
+            }
         }
-    }
-});
+    });
+}
 
 document.getElementById('excelFile').addEventListener('change', function(e) {
-    const file = e.target.files[0];
     const reader = new FileReader();
     reader.onload = function(evt) {
         const data = new Uint8Array(evt.target.result);
         const workbook = XLSX.read(data, {type: 'array'});
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const json = XLSX.utils.sheet_to_json(sheet);
+        storeData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
 
-        if(json.length > 0) {
-            lineChart.data.labels = json.map(item => item.Tienda || item.tienda || 'Tienda');
-            lineChart.data.datasets[0].data = json.map(item => item.m2 || 0);
-            lineChart.data.datasets[1].data = json.map(item => item.m3 || 0);
-            lineChart.update();
-        }
+        // Llenar selector de Áreas
+        const areas = [...new Set(storeData.map(item => item.Area_Comercial))];
+        const filterArea = document.getElementById('filterArea');
+        filterArea.innerHTML = '<option value="todas">Todas las Áreas</option>';
+        areas.forEach(area => {
+            filterArea.innerHTML += `<option value="${area}">${area}</option>`;
+        });
+
+        document.getElementById('controls').style.display = 'flex';
+        updateVisualization();
     };
-    reader.readAsArrayBuffer(file);
+    reader.readAsArrayBuffer(e.target.files[0]);
 });
+
+function updateVisualization() {
+    const areaFilter = document.getElementById('filterArea').value;
+    const metric = document.getElementById('metricType').value;
+    
+    let filtered = storeData;
+    if (areaFilter !== 'todas') {
+        filtered = storeData.filter(item => item.Area_Comercial === areaFilter);
+    }
+
+    const labels = filtered.map(item => item.Tienda);
+    const values = filtered.map(item => item[metric]);
+    const labelName = metric === 'm2' ? 'Metros Cuadrados (m²)' : 'Metros Cúbicos (m³)';
+
+    initChart(labels, values, labelName);
+}
+
+// Eventos de los filtros
+document.getElementById('filterArea').addEventListener('change', updateVisualization);
+document.getElementById('metricType').addEventListener('change', updateVisualization);
