@@ -1,110 +1,1510 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Store Planning | Promart</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Store Planning | Promart</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════════════
+   VARIABLES & RESET
+═══════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --or:  #F15A22;
+  --ord: #C94A18;
+  --orl: #FEF0EA;
+  --nv:  #111111;
+  --nv2: #1A1A1A;
+  --nv3: #252525;
+  --bg:  #F7F7F7;
+  --bg2: #EFEFEF;
+  --wh:  #FFFFFF;
+  --tx:  #111111;
+  --mu:  #666666;
+  --bd:  #DDDDDD;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--tx); overflow-x: hidden; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--nv); }
+::-webkit-scrollbar-thumb { background: var(--or); border-radius: 3px; }
+
+/* ═══════════════════════════════════════════════════
+   NAVBAR
+═══════════════════════════════════════════════════ */
+.navbar {
+  background: var(--nv);
+  padding: 0 5%;
+  height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 3px solid var(--or);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.logo {
+  color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.logo span { color: var(--or); }
+.menu { display: flex; gap: 4px; }
+.menu a {
+  color: rgba(255,255,255,.55);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  padding: 6px 13px;
+  border-radius: 5px;
+  transition: all .18s;
+}
+.menu a:hover { color: #fff; background: rgba(255,255,255,.1); }
+
+/* ═══════════════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════════════ */
+.hero {
+  background: var(--nv);
+  padding: 70px 5% 60px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 52px 52px;
+}
+.hero-poly {
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 40%;
+  clip-path: polygon(22% 0%, 100% 0%, 100% 100%, 0% 100%);
+  background: var(--or);
+  opacity: .9;
+}
+.hero-poly-accent {
+  position: absolute;
+  right: 0; top: 0;
+  width: 25%;
+  height: 55%;
+  clip-path: polygon(40% 0%, 100% 0%, 100% 100%);
+  background: rgba(255,255,255,.08);
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 580px;
+}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(241,90,34,.18);
+  border: 1px solid rgba(241,90,34,.45);
+  color: #FDDDD0;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: .1em;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-bottom: 22px;
+}
+.hero h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 90px;
+  line-height: .88;
+  color: #fff;
+  letter-spacing: -.02em;
+}
+.hero h1 em { font-style: normal; color: var(--or); }
+.hero-rule { width: 180px; height: 4px; background: var(--or); margin: 20px 0 18px; }
+.hero-sub { color: rgba(255,255,255,.5); font-size: 16px; line-height: 1.65; }
+
+/* ═══════════════════════════════════════════════════
+   SECTIONS
+═══════════════════════════════════════════════════ */
+.section {
+  padding: 70px 5%;
+}
+.section.gray { background: var(--bg2); }
+.section.dark { background: var(--nv); }
+.section.dark-2 { background: var(--nv2); }
+
+.section-header { margin-bottom: 36px; }
+.section-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--or);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 44px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -.01em;
+  line-height: 1;
+  color: var(--nv);
+}
+.section-title em { font-style: normal; color: var(--or); }
+.section-title.light { color: #fff; }
+.section-rule { width: 56px; height: 3px; background: var(--or); margin: 12px 0 16px; }
+.section-desc {
+  font-size: 15px;
+  color: var(--mu);
+  line-height: 1.7;
+  max-width: 680px;
+}
+.section-desc.light { color: rgba(255,255,255,.5); }
+
+/* ═══════════════════════════════════════════════════
+   01. FICHAS — CARDS
+═══════════════════════════════════════════════════ */
+.fichas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 20px;
+  margin-top: 8px;
+}
+.ficha-card {
+  background: var(--wh);
+  border-radius: 14px;
+  border: 1.5px solid var(--bd);
+  text-decoration: none;
+  color: var(--nv);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all .22s cubic-bezier(.34,1.56,.64,1);
+  position: relative;
+}
+.ficha-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 36px rgba(0,0,0,.12);
+  border-color: var(--or);
+}
+.ficha-card:active { transform: translateY(-2px) scale(.98); }
+
+/* SVG preview top area */
+.ficha-preview {
+  background: var(--nv);
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.ficha-preview::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.ficha-preview svg { position: relative; z-index: 1; }
+
+.ficha-badge {
+  position: absolute;
+  top: 12px; right: 12px;
+  background: var(--or);
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 10px;
+  z-index: 2;
+}
+.ficha-body {
+  padding: 20px 22px 22px;
+  border-top: 3px solid var(--or);
+  flex: 1;
+}
+.ficha-type {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--or);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.ficha-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--nv);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.ficha-meta {
+  font-size: 12px;
+  color: var(--mu);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ficha-meta i { color: var(--or); font-size: 11px; }
+.ficha-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--bd);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--or);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+/* ═══════════════════════════════════════════════════
+   02. BIM — BUTTONS
+═══════════════════════════════════════════════════ */
+.bim-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+}
+.bim-btn {
+  background: var(--wh);
+  border: 1.5px solid var(--bd);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--nv);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow: hidden;
+  transition: all .22s cubic-bezier(.34,1.56,.64,1);
+}
+.bim-btn:hover {
+  transform: translateY(-4px) translateX(3px);
+  box-shadow: 0 10px 28px rgba(0,0,0,.1);
+  border-color: var(--or);
+}
+.bim-btn:active { transform: scale(.97); }
+
+.bim-icon-wrap {
+  width: 72px;
+  min-width: 72px;
+  height: 72px;
+  background: var(--nv);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .18s;
+}
+.bim-btn:hover .bim-icon-wrap { background: var(--or); }
+.bim-icon-wrap svg { transition: transform .22s; }
+.bim-btn:hover .bim-icon-wrap svg { transform: scale(1.1); }
+
+.bim-text {
+  padding: 14px 16px;
+  flex: 1;
+}
+.bim-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--or);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 3px;
+}
+.bim-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 1.1;
+  color: var(--nv);
+}
+.bim-arrow { padding-right: 16px; color: var(--bd); font-size: 14px; transition: color .18s; }
+.bim-btn:hover .bim-arrow { color: var(--or); }
+
+/* ═══════════════════════════════════════════════════
+   03. ACUERDOS — ACTION BUTTON
+═══════════════════════════════════════════════════ */
+.acuerdo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  background: var(--wh);
+  border: 1.5px solid var(--bd);
+  border-radius: 14px;
+  padding: 30px 32px;
+  flex-wrap: wrap;
+}
+.acuerdo-icon-wrap {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: var(--nv);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.acuerdo-info { flex: 1; min-width: 200px; }
+.acuerdo-info h3 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.acuerdo-info p { font-size: 14px; color: var(--mu); line-height: 1.6; }
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  padding: 14px 26px;
+  border-radius: 10px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 17px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  transition: all .2s cubic-bezier(.34,1.56,.64,1);
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+}
+.cta-btn.dark-btn { background: var(--nv); color: #fff; }
+.cta-btn.or-btn   { background: var(--or); color: #fff; }
+.cta-btn:hover    { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,.18); }
+.cta-btn.or-btn:hover { box-shadow: 0 8px 22px rgba(241,90,34,.35); }
+.cta-btn:active   { transform: scale(.96); }
+
+/* ═══════════════════════════════════════════════════
+   04. ANÁLISIS — DASHBOARD
+═══════════════════════════════════════════════════ */
+.dash-wrap {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+  margin-top: 8px;
+}
+.sidebar {
+  background: var(--nv2);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.filter-group { margin-bottom: 22px; }
+.filter-group:last-child { margin-bottom: 0; }
+.filter-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--or);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 8px;
+}
+.filter-label i { font-size: 12px; }
+
+/* Upload zone */
+.upload-zone {
+  background: rgba(241,90,34,.06);
+  border: 2px dashed rgba(241,90,34,.4);
+  border-radius: 10px;
+  padding: 20px 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+}
+.upload-zone:hover { background: rgba(241,90,34,.1); border-color: var(--or); }
+.upload-zone .uz-icon { font-size: 28px; margin-bottom: 6px; }
+.upload-zone p { color: rgba(255,255,255,.5); font-size: 12px; line-height: 1.5; }
+.upload-zone p b { color: var(--or); }
+#excelInput { display: none; }
+
+/* Template hint */
+.template-hint {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: rgba(255,255,255,.25);
+  margin-top: 8px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: 'Barlow', sans-serif;
+  width: 100%;
+  justify-content: center;
+  transition: color .15s;
+}
+.template-hint:hover { color: var(--or); }
+
+select.ctrl-select, select.ctrl-select-light {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: 'Barlow', sans-serif;
+  outline: none;
+  cursor: pointer;
+}
+select.ctrl-select {
+  background: var(--nv);
+  border: 1px solid rgba(255,255,255,.12);
+  color: #fff;
+}
+select.ctrl-select option { background: var(--nv); }
+
+.checklist-box {
+  background: var(--nv);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 8px;
+}
+.checklist-box label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255,255,255,.75);
+  font-size: 13px;
+  padding: 6px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background .12s;
+}
+.checklist-box label:hover { background: rgba(255,255,255,.05); }
+.checklist-box input[type="checkbox"] {
+  accent-color: var(--or);
+  width: 15px; height: 15px;
+}
+
+/* Select all / none */
+.sel-btns { display: flex; gap: 6px; margin-bottom: 8px; }
+.sel-btn {
+  font-size: 11px;
+  color: var(--or);
+  background: rgba(241,90,34,.1);
+  border: 1px solid rgba(241,90,34,.25);
+  border-radius: 4px;
+  padding: 3px 9px;
+  cursor: pointer;
+  font-family: 'Barlow', sans-serif;
+  transition: background .15s;
+}
+.sel-btn:hover { background: rgba(241,90,34,.2); }
+
+/* Chart area */
+.chart-panel {
+  background: var(--nv2);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 14px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.chart-topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.chart-meta-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+.chart-meta-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,.3);
+  font-family: 'JetBrains Mono', monospace;
+}
+.legend-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  min-height: 48px;
+  align-items: center;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: rgba(255,255,255,.7);
+  background: rgba(255,255,255,.04);
+  padding: 4px 11px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.07);
+}
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.canvas-holder { height: 380px; position: relative; }
+.empty-chart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 380px;
+  color: rgba(255,255,255,.2);
+  font-size: 14px;
+  gap: 10px;
+  text-align: center;
+}
+.empty-chart i { font-size: 48px; opacity: .3; }
+
+/* ═══════════════════════════════════════════════════
+   05. SOLICITUDES
+═══════════════════════════════════════════════════ */
+.solicitud-card {
+  background: var(--wh);
+  border: 1.5px solid var(--bd);
+  border-radius: 14px;
+  padding: 36px;
+  display: flex;
+  gap: 36px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.solicitud-left { flex: 1; min-width: 260px; }
+.solicitud-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--orl);
+  border: 1px solid #FDDDD0;
+  color: var(--ord);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 11px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: .06em;
+}
+.solicitud-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 34px;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+.solicitud-desc { font-size: 14px; color: var(--mu); line-height: 1.7; max-width: 520px; }
+
+/* Steps row */
+.steps {
+  display: flex;
+  gap: 0;
+  margin-top: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 0; right: 0;
+  height: 2px;
+  background: var(--bd);
+  z-index: 0;
+}
+.step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  padding: 0 8px;
+}
+.step-dot {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--bd);
+  background: var(--wh);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  margin-bottom: 10px;
+  transition: all .2s;
+}
+.step-dot.active { background: var(--or); border-color: var(--or); color: #fff; }
+.step-dot.done   { background: var(--nv); border-color: var(--nv); color: #fff; }
+.step-lbl { font-size: 11px; color: var(--mu); line-height: 1.4; font-weight: 600; }
+.step-lbl.active { color: var(--ord); }
+.step-lbl.done   { color: var(--nv); }
+
+/* ═══════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════ */
+footer {
+  background: var(--nv);
+  border-top: 3px solid var(--or);
+  padding: 28px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.foot-brand {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 16px;
+  color: var(--or);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.foot-copy {
+  font-size: 12px;
+  color: rgba(255,255,255,.2);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ═══════════════════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════════════════ */
+.mt4  { margin-top: 4px; }
+.mt8  { margin-top: 8px; }
+.mt16 { margin-top: 16px; }
+.mt24 { margin-top: 24px; }
+
+@media(max-width:900px) {
+  .dash-wrap  { grid-template-columns: 1fr; }
+  .hero h1    { font-size: 62px; }
+  .fichas-grid { grid-template-columns: 1fr; }
+  .bim-grid   { grid-template-columns: 1fr; }
+}
+</style>
 </head>
 <body>
 
+<!-- ═══════════════════════════════ NAVBAR ═══ -->
 <nav class="navbar">
-    <div class="logo">PROMART <span>STORE PLANNING</span></div>
-    <div class="menu">
-        <a href="#fichas">01. Fichas</a>
-        <a href="#bim">02. BIM</a>
-        <a href="#acuerdos">03. Acuerdos</a>
-        <a href="#analisis">04. Análisis</a>
-        <a href="#solicitudes">05. Solicitudes</a>
-    </div>
+  <div class="logo">PROMART <span>STORE PLANNING</span></div>
+  <div class="menu">
+    <a href="#fichas">01. Fichas</a>
+    <a href="#bim">02. BIM</a>
+    <a href="#acuerdos">03. Acuerdos</a>
+    <a href="#analisis">04. Análisis</a>
+    <a href="#solicitudes">05. Solicitudes</a>
+  </div>
 </nav>
 
+<!-- ═══════════════════════════════ HERO ═══ -->
+<header class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-poly"></div>
+  <div class="hero-poly-accent"></div>
+  <!-- Floor-plan decoration (SVG) -->
+  <svg style="position:absolute;right:8%;top:50%;transform:translateY(-50%);z-index:1;opacity:.14;" width="300" height="240" viewBox="0 0 300 240" fill="none">
+    <rect x="10" y="10" width="280" height="220" stroke="white" stroke-width="2"/>
+    <rect x="10" y="10" width="120" height="110" stroke="white" stroke-width="1.5"/>
+    <rect x="130" y="10" width="90" height="110" stroke="white" stroke-width="1.5"/>
+    <rect x="10" y="120" width="170" height="110" stroke="white" stroke-width="1.5"/>
+    <line x1="80" y1="120" x2="80" y2="230" stroke="white" stroke-width="1"/>
+    <line x1="220" y1="10" x2="220" y2="145" stroke="white" stroke-width="1"/>
+    <line x1="10" y1="180" x2="180" y2="180" stroke="white" stroke-width="1"/>
+  </svg>
+  <div class="hero-content">
+    <div class="hero-eyebrow"><i class="fa-solid fa-location-dot"></i> PORTAL DEL ÁREA · PROMART HOMECENTER</div>
+    <h1>STORE<em>PLANNING</em></h1>
+    <div class="hero-rule"></div>
+    <p class="hero-sub">Bienvenido a los activos digitales del área.<br>Planificación · Diseño · Desarrollo de tiendas.</p>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     01. FICHAS DE TIENDA IDEAL
+════════════════════════════════════════════ -->
 <section id="fichas" class="section">
-    <h2 class="section-title">01. Fichas de <span>Tienda Ideal</span></h2>
-    <p class="section-desc">Documentación técnica de prototipos según formato de tienda y equipamiento.</p>
-    <div class="grid-buttons">
-        <a href="LINK_1" class="btn-card" target="_blank">
-            <i class="fa-solid fa-store"></i>
-            <div><strong>TIENDA ALTA:</strong><br>Picada 5.00 HMY</div>
-        </a>
-        <a href="LINK_2" class="btn-card" target="_blank">
-            <i class="fa-solid fa-shop"></i>
-            <div><strong>TIENDA BAJA:</strong><br>Picada 7.50 JRM</div>
-        </a>
-    </div>
+  <div class="section-header">
+    <div class="section-num">01 — REPOSITORIO</div>
+    <h2 class="section-title">FICHAS DE <em>TIENDA IDEAL</em></h2>
+    <div class="section-rule"></div>
+    <p class="section-desc">
+      Repositorio centralizado de fichas técnicas por formato de tienda. Cada ficha define los estándares de diseño, equipamiento metálico, picadas de rack y especificaciones técnicas del proveedor homologado, diferenciando entre tienda alta y baja para una planificación precisa de espacios comerciales.
+    </p>
+  </div>
+
+  <div class="fichas-grid">
+
+    <!-- TIENDA ALTA -->
+    <a class="ficha-card"
+       href="https://intercorpretail.sharepoint.com/:f:/s/DISEO20/IgBULCSkslTSTKHMPCexOGKjAcAd1zdtJVh6ZFur-mHmhSA?e=s2JYpG"
+       target="_blank">
+      <div class="ficha-preview">
+        <div class="ficha-badge">TIENDA ALTA</div>
+        <!-- SVG: elevation view of tall shelf rack -->
+        <svg width="200" height="120" viewBox="0 0 200 120" fill="none">
+          <!-- Floor -->
+          <line x1="10" y1="110" x2="190" y2="110" stroke="#F15A22" stroke-width="2"/>
+          <!-- Rack structure tall -->
+          <rect x="30" y="10" width="6" height="100" fill="#444"/>
+          <rect x="85" y="10" width="6" height="100" fill="#444"/>
+          <rect x="140" y="10" width="6" height="100" fill="#444"/>
+          <!-- Shelves tall rack - 6 levels -->
+          <rect x="30" y="10"  width="61" height="5" fill="#F15A22" rx="1"/>
+          <rect x="30" y="27"  width="61" height="5" fill="#888" rx="1"/>
+          <rect x="30" y="44"  width="61" height="5" fill="#888" rx="1"/>
+          <rect x="30" y="61"  width="61" height="5" fill="#888" rx="1"/>
+          <rect x="30" y="78"  width="61" height="5" fill="#888" rx="1"/>
+          <rect x="30" y="95"  width="61" height="5" fill="#888" rx="1"/>
+          <!-- Shelves 2nd section -->
+          <rect x="85" y="10"  width="61" height="5" fill="#F15A22" rx="1"/>
+          <rect x="85" y="27"  width="61" height="5" fill="#888" rx="1"/>
+          <rect x="85" y="44"  width="61" height="5" fill="#888" rx="1"/>
+          <rect x="85" y="61"  width="61" height="5" fill="#888" rx="1"/>
+          <rect x="85" y="78"  width="61" height="5" fill="#888" rx="1"/>
+          <rect x="85" y="95"  width="61" height="5" fill="#888" rx="1"/>
+          <!-- Dimension line -->
+          <line x1="22" y1="10" x2="22" y2="110" stroke="white" stroke-width="1" stroke-dasharray="3,2"/>
+          <line x1="19" y1="10"  x2="25" y2="10"  stroke="white" stroke-width="1"/>
+          <line x1="19" y1="110" x2="25" y2="110" stroke="white" stroke-width="1"/>
+          <text x="6" y="64" fill="white" font-size="7" font-family="monospace">H</text>
+          <!-- Label -->
+          <text x="152" y="70" fill="#F15A22" font-size="9" font-family="monospace" font-weight="bold">5.00 m</text>
+        </svg>
+      </div>
+      <div class="ficha-body">
+        <div class="ficha-type">Picada 5.00 · Proveedor HMY</div>
+        <div class="ficha-name">TIENDA ALTA</div>
+        <div class="ficha-meta">
+          <i class="fa-solid fa-ruler-vertical"></i> Altura 5.00 m
+          &nbsp;·&nbsp;
+          <i class="fa-solid fa-building"></i> HMY
+        </div>
+        <div class="ficha-arrow">
+          Abrir repositorio
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+      </div>
+    </a>
+
+    <!-- TIENDA BAJA -->
+    <a class="ficha-card"
+       href="https://intercorpretail.sharepoint.com/:f:/s/DISEO20/IgATBf2HAFQqTL9MArGzLinBAZXgsNfljYjwxcgqyO6PKyA?e=hCOrcI"
+       target="_blank">
+      <div class="ficha-preview">
+        <div class="ficha-badge">TIENDA BAJA</div>
+        <!-- SVG: lower rack - fewer levels -->
+        <svg width="200" height="120" viewBox="0 0 200 120" fill="none">
+          <!-- Floor -->
+          <line x1="10" y1="110" x2="190" y2="110" stroke="#F15A22" stroke-width="2"/>
+          <!-- Rack structure low -->
+          <rect x="30" y="40" width="6" height="70" fill="#444"/>
+          <rect x="85" y="40" width="6" height="70" fill="#444"/>
+          <rect x="140" y="40" width="6" height="70" fill="#444"/>
+          <!-- Shelves - 4 levels -->
+          <rect x="30" y="40"  width="61" height="5" fill="#F15A22" rx="1"/>
+          <rect x="30" y="57"  width="61" height="5" fill="#888" rx="1"/>
+          <rect x="30" y="74"  width="61" height="5" fill="#888" rx="1"/>
+          <rect x="30" y="91"  width="61" height="5" fill="#888" rx="1"/>
+          <rect x="85" y="40"  width="61" height="5" fill="#F15A22" rx="1"/>
+          <rect x="85" y="57"  width="61" height="5" fill="#888" rx="1"/>
+          <rect x="85" y="74"  width="61" height="5" fill="#888" rx="1"/>
+          <rect x="85" y="91"  width="61" height="5" fill="#888" rx="1"/>
+          <!-- Dimension line -->
+          <line x1="22" y1="40" x2="22" y2="110" stroke="white" stroke-width="1" stroke-dasharray="3,2"/>
+          <line x1="19" y1="40"  x2="25" y2="40"  stroke="white" stroke-width="1"/>
+          <line x1="19" y1="110" x2="25" y2="110" stroke="white" stroke-width="1"/>
+          <text x="6" y="80" fill="white" font-size="7" font-family="monospace">H</text>
+          <!-- Label -->
+          <text x="152" y="82" fill="#F15A22" font-size="9" font-family="monospace" font-weight="bold">7.50 m</text>
+        </svg>
+      </div>
+      <div class="ficha-body">
+        <div class="ficha-type">Picada 7.50 · Proveedor JRM</div>
+        <div class="ficha-name">TIENDA BAJA</div>
+        <div class="ficha-meta">
+          <i class="fa-solid fa-ruler-vertical"></i> Altura 7.50 m
+          &nbsp;·&nbsp;
+          <i class="fa-solid fa-building"></i> JRM
+        </div>
+        <div class="ficha-arrow">
+          Abrir repositorio
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+      </div>
+    </a>
+
+  </div>
 </section>
 
+<!-- ═══════════════════════════════════════════
+     02. REPOSITORIO BIM
+════════════════════════════════════════════ -->
 <section id="bim" class="section gray">
-    <h2 class="section-title">02. Repositorio <span>BIM</span></h2>
-    <p class="section-desc">Acceso a familias paramétricas y plantillas oficiales de Revit.</p>
-    <div class="grid-bim">
-        <a href="LINK_3" class="bim-btn" target="_blank"><i class="fa-solid fa-cubes"></i> A. PLANTILLA BASE</a>
-        <a href="LINK_4" class="bim-btn" target="_blank"><i class="fa-solid fa-truck-ramp-box"></i> B. FAMILIAS RACKS HMY</a>
-        <a href="LINK_5" class="bim-btn" target="_blank"><i class="fa-solid fa-warehouse"></i> C. FAMILIAS RACKS JRM</a>
-        <a href="LINK_6" class="bim-btn" target="_blank"><i class="fa-solid fa-table-cells-large"></i> D. FAMILIAS GONDOLAS</a>
-        <a href="LINK_7" class="bim-btn" target="_blank"><i class="fa-solid fa-couch"></i> E. FAMILIAS CARPINTERIA</a>
-        <a href="LINK_8" class="bim-btn" target="_blank"><i class="fa-solid fa-bolt-lightning"></i> F. INSTALACIONES ELECTRICAS</a>
-    </div>
+  <div class="section-header">
+    <div class="section-num">02 — FAMILIAS REVIT</div>
+    <h2 class="section-title">REPOSITORIO <em>BIM</em></h2>
+    <div class="section-rule"></div>
+    <p class="section-desc">
+      Biblioteca completa de familias BIM paramétricas para Revit, organizadas por tipología de equipamiento y proveedor homologado Promart. Incluye la plantilla base de proyecto, racks metálicos por fabricante, góndolas, carpintería e instalaciones eléctricas listas para integrar en tus proyectos.
+    </p>
+  </div>
+
+  <div class="bim-grid">
+
+    <!-- A. PLANTILLA BASE -->
+    <a href="LINK_3" class="bim-btn" target="_blank">
+      <div class="bim-icon-wrap">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <rect x="7" y="4" width="22" height="28" rx="2" stroke="white" stroke-width="1.8" fill="none"/>
+          <line x1="12" y1="11" x2="24" y2="11" stroke="#F15A22" stroke-width="1.5"/>
+          <line x1="12" y1="16" x2="24" y2="16" stroke="white" stroke-width="1" opacity=".5"/>
+          <line x1="12" y1="21" x2="20" y2="21" stroke="white" stroke-width="1" opacity=".5"/>
+          <circle cx="25" cy="25" r="6" fill="#F15A22"/>
+          <line x1="25" y1="22" x2="25" y2="28" stroke="white" stroke-width="1.5"/>
+          <line x1="22" y1="25" x2="28" y2="25" stroke="white" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="bim-text">
+        <div class="bim-label">A · Template</div>
+        <div class="bim-name">Plantilla Base</div>
+      </div>
+      <div class="bim-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+    </a>
+
+    <!-- B. RACKS HMY -->
+    <a href="LINK_4" class="bim-btn" target="_blank">
+      <div class="bim-icon-wrap">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <rect x="6"  y="4" width="4" height="28" fill="#666"/>
+          <rect x="26" y="4" width="4" height="28" fill="#666"/>
+          <rect x="6" y="5"  width="24" height="3" fill="#F15A22" rx="1"/>
+          <rect x="6" y="13" width="24" height="3" fill="#888" rx="1"/>
+          <rect x="6" y="21" width="24" height="3" fill="#888" rx="1"/>
+          <rect x="6" y="29" width="24" height="3" fill="#888" rx="1"/>
+          <text x="9" y="11" fill="white" font-size="5" font-family="monospace">HMY</text>
+        </svg>
+      </div>
+      <div class="bim-text">
+        <div class="bim-label">B · Proveedor HMY</div>
+        <div class="bim-name">Racks Metálicos HMY</div>
+      </div>
+      <div class="bim-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+    </a>
+
+    <!-- C. RACKS JRM -->
+    <a href="LINK_5" class="bim-btn" target="_blank">
+      <div class="bim-icon-wrap">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <rect x="6"  y="4" width="4" height="28" fill="#666"/>
+          <rect x="26" y="4" width="4" height="28" fill="#666"/>
+          <rect x="6" y="5"  width="24" height="3" fill="#F15A22" rx="1"/>
+          <rect x="6" y="13" width="24" height="3" fill="#888" rx="1"/>
+          <rect x="6" y="21" width="24" height="3" fill="#888" rx="1"/>
+          <rect x="6" y="29" width="24" height="3" fill="#888" rx="1"/>
+          <text x="9" y="11" fill="white" font-size="5" font-family="monospace">JRM</text>
+        </svg>
+      </div>
+      <div class="bim-text">
+        <div class="bim-label">C · Proveedor JRM</div>
+        <div class="bim-name">Racks Metálicos JRM</div>
+      </div>
+      <div class="bim-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+    </a>
+
+    <!-- D. GONDOLAS -->
+    <a href="LINK_6" class="bim-btn" target="_blank">
+      <div class="bim-icon-wrap">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <!-- gondola shape: low, wide double-sided -->
+          <rect x="4"  y="14" width="13" height="16" rx="1" fill="#444"/>
+          <rect x="19" y="14" width="13" height="16" rx="1" fill="#444"/>
+          <!-- shelves -->
+          <rect x="4"  y="15" width="13" height="2" fill="#F15A22" rx="1"/>
+          <rect x="4"  y="21" width="13" height="2" fill="#888" rx="1"/>
+          <rect x="4"  y="27" width="13" height="2" fill="#888" rx="1"/>
+          <rect x="19" y="15" width="13" height="2" fill="#F15A22" rx="1"/>
+          <rect x="19" y="21" width="13" height="2" fill="#888" rx="1"/>
+          <rect x="19" y="27" width="13" height="2" fill="#888" rx="1"/>
+          <!-- top cap -->
+          <rect x="3" y="12" width="14" height="3" fill="#555" rx="1"/>
+          <rect x="19" y="12" width="14" height="3" fill="#555" rx="1"/>
+          <!-- floor -->
+          <line x1="2" y1="30" x2="34" y2="30" stroke="#F15A22" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="bim-text">
+        <div class="bim-label">D · Exhibición</div>
+        <div class="bim-name">Familias Góndolas</div>
+      </div>
+      <div class="bim-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+    </a>
+
+    <!-- E. CARPINTERÍA -->
+    <a href="LINK_7" class="bim-btn" target="_blank">
+      <div class="bim-icon-wrap">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <!-- cabinet / furniture -->
+          <rect x="6" y="8" width="24" height="22" rx="2" stroke="white" stroke-width="1.8" fill="#333"/>
+          <line x1="18" y1="8" x2="18" y2="30" stroke="#666" stroke-width="1"/>
+          <line x1="6" y1="19" x2="30" y2="19" stroke="#666" stroke-width="1"/>
+          <!-- handles -->
+          <rect x="14" y="23" width="3" height="1.5" rx=".7" fill="#F15A22"/>
+          <rect x="19" y="23" width="3" height="1.5" rx=".7" fill="#F15A22"/>
+          <rect x="14" y="12" width="3" height="1.5" rx=".7" fill="#F15A22"/>
+          <rect x="19" y="12" width="3" height="1.5" rx=".7" fill="#F15A22"/>
+        </svg>
+      </div>
+      <div class="bim-text">
+        <div class="bim-label">E · Mobiliario</div>
+        <div class="bim-name">Familias Carpintería</div>
+      </div>
+      <div class="bim-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+    </a>
+
+    <!-- F. INSTALACIONES ELÉCTRICAS -->
+    <a href="LINK_8" class="bim-btn" target="_blank">
+      <div class="bim-icon-wrap">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <!-- ceiling light -->
+          <circle cx="18" cy="14" r="6" fill="#F15A22" opacity=".8"/>
+          <circle cx="18" cy="14" r="3.5" fill="#F15A22"/>
+          <!-- rays -->
+          <line x1="18" y1="4"  x2="18" y2="7"  stroke="#F15A22" stroke-width="1.5" opacity=".7"/>
+          <line x1="27" y1="6"  x2="25" y2="8"  stroke="#F15A22" stroke-width="1.5" opacity=".7"/>
+          <line x1="30" y1="14" x2="27" y2="14" stroke="#F15A22" stroke-width="1.5" opacity=".7"/>
+          <line x1="9"  y1="6"  x2="11" y2="8"  stroke="#F15A22" stroke-width="1.5" opacity=".7"/>
+          <line x1="6"  y1="14" x2="9"  y2="14" stroke="#F15A22" stroke-width="1.5" opacity=".7"/>
+          <!-- conduit line down -->
+          <line x1="18" y1="20" x2="18" y2="32" stroke="white" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <!-- junction box -->
+          <rect x="13" y="26" width="10" height="8" rx="1.5" fill="#444" stroke="#666" stroke-width="1"/>
+          <!-- outlet symbol -->
+          <circle cx="16" cy="30" r="1.2" fill="white"/>
+          <circle cx="20" cy="30" r="1.2" fill="white"/>
+        </svg>
+      </div>
+      <div class="bim-text">
+        <div class="bim-label">F · MEP</div>
+        <div class="bim-name">Instalaciones Eléctricas</div>
+      </div>
+      <div class="bim-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+    </a>
+
+  </div>
 </section>
 
+<!-- ═══════════════════════════════════════════
+     03. ACUERDOS DEL ÁREA
+════════════════════════════════════════════ -->
 <section id="acuerdos" class="section">
-    <h2 class="section-title">03. Acuerdos <span>del Área</span></h2>
-    <p class="section-desc">Registro oficial de actas y compromisos estratégicos del equipo.</p>
-    <a href="LINK_9" target="_blank" class="main-btn">
-        <i class="fa-solid fa-file-signature"></i> Ir a Actas de Acuerdos
-    </a>
-</section>
+  <div class="section-header">
+    <div class="section-num">03 — GESTIÓN DEL ÁREA</div>
+    <h2 class="section-title">ACUERDOS <em>DEL ÁREA</em></h2>
+    <div class="section-rule"></div>
+    <p class="section-desc">
+      Registro oficial de actas, lineamientos y compromisos estratégicos establecidos por el equipo de Store Planning. Centraliza las coordinaciones internas, criterios de trabajo, responsabilidades y seguimiento de actividades para garantizar una gestión organizada y alineada con los objetivos del proyecto.
+    </p>
+  </div>
 
-<section id="analisis" class="section dark">
-    <h2 class="section-title" style="color:white">04. Análisis de <span>Tienda</span></h2>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="filter-group">
-                <label><i class="fa-solid fa-upload"></i> Cargar Excel</label>
-                <input type="file" id="excelInput" accept=".xlsx, .xls">
-            </div>
-
-            <div id="dynamic-controls" style="display:none">
-                <div class="filter-group">
-                    <label><i class="fa-solid fa-globe"></i> País</label>
-                    <select id="paisFilter" onchange="logic_updateStores()"></select>
-                </div>
-                <div class="filter-group">
-                    <label><i class="fa-solid fa-list-check"></i> Seleccionar Tiendas</label>
-                    <div id="tiendaChecklist" class="checklist-container"></div>
-                </div>
-                <div class="filter-group">
-                    <label><i class="fa-solid fa-ruler-combined"></i> Métrica</label>
-                    <select id="metricaFilter" onchange="logic_renderChart()">
-                        <option value="m2">Metros Cuadrados (m²)</option>
-                        <option value="m3">Metros Cúbicos (m³)</option>
-                    </select>
-                </div>
-            </div>
-        </aside>
-
-        <main class="chart-area">
-            <div id="chart-legend" class="dynamic-legend"></div>
-            <div class="canvas-holder">
-                <canvas id="mainChart"></canvas>
-            </div>
-        </main>
+  <div class="acuerdo-wrap">
+    <div class="acuerdo-icon-wrap">
+      <svg width="42" height="42" viewBox="0 0 42 42" fill="none">
+        <rect x="8" y="4" width="26" height="34" rx="3" stroke="white" stroke-width="2" fill="none"/>
+        <line x1="14" y1="13" x2="28" y2="13" stroke="#F15A22" stroke-width="2"/>
+        <line x1="14" y1="19" x2="28" y2="19" stroke="white" stroke-width="1.2" opacity=".5"/>
+        <line x1="14" y1="25" x2="22" y2="25" stroke="white" stroke-width="1.2" opacity=".5"/>
+        <!-- check -->
+        <circle cx="32" cy="32" r="7" fill="#F15A22"/>
+        <polyline points="28,32 31,35 36,29" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
     </div>
-</section>
-
-<section id="solicitudes" class="section">
-    <h2 class="section-title">05. Solicitudes de <span>Cambios</span></h2>
-    <p class="section-desc">Canal oficial para requerimientos de modificación técnica.</p>
-    <a href="LINK_10" target="_blank" class="main-btn orange-btn">
-        <i class="fa-solid fa-pen-to-square"></i> Formulario de Solicitudes
+    <div class="acuerdo-info">
+      <h3>Actas de Acuerdos de Gestión 2026</h3>
+      <p>Accede al repositorio oficial con todas las actas, compromisos y resoluciones del equipo de Store Planning. Documentos vigentes y en seguimiento para el año 2026.</p>
+    </div>
+    <a href="LINK_9" target="_blank" class="cta-btn dark-btn">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <rect x="3" y="2" width="12" height="14" rx="2" stroke="white" stroke-width="1.5" fill="none"/>
+        <line x1="6" y1="6"  x2="12" y2="6"  stroke="#F15A22" stroke-width="1.2"/>
+        <line x1="6" y1="9"  x2="12" y2="9"  stroke="white" stroke-width="1" opacity=".5"/>
+        <line x1="6" y1="12" x2="9"  y2="12" stroke="white" stroke-width="1" opacity=".5"/>
+      </svg>
+      Ver Actas de Acuerdos
     </a>
+  </div>
 </section>
 
-<footer>PROMART HOMECENTER &copy; 2026</footer>
+<!-- ═══════════════════════════════════════════
+     04. ANÁLISIS DE TIENDA
+════════════════════════════════════════════ -->
+<section id="analisis" class="section dark">
+  <div class="section-header">
+    <div class="section-num" style="color:rgba(241,90,34,.8)">04 — COMPARATIVO</div>
+    <h2 class="section-title light">ANÁLISIS DE <em>TIENDA</em></h2>
+    <div class="section-rule"></div>
+    <p class="section-desc light">
+      Carga un archivo Excel con datos por tienda y área comercial para comparar métricas de M² y M³ entre múltiples tiendas. Filtra por país, selecciona las tiendas y elige la métrica para generar el gráfico comparativo.
+    </p>
+  </div>
 
-<script src="script.js"></script>
+  <div class="dash-wrap">
+
+    <!-- SIDEBAR CONTROLS -->
+    <aside class="sidebar">
+
+      <!-- Upload -->
+      <div class="filter-group">
+        <div class="filter-label"><i class="fa-solid fa-file-excel"></i> Cargar Excel</div>
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('excelInput').click()">
+          <div class="uz-icon">📂</div>
+          <p>Arrastra o <b>haz clic</b> para cargar<br><span style="font-size:11px;color:rgba(255,255,255,.3);">.xlsx · .xls · .csv</span></p>
+        </div>
+        <input type="file" id="excelInput" accept=".xlsx,.xls,.csv">
+        <button class="template-hint" onclick="downloadTemplate()">
+          <i class="fa-solid fa-download"></i> Descargar plantilla de ejemplo
+        </button>
+      </div>
+
+      <!-- Dynamic controls (shown after load) -->
+      <div id="dynamic-controls" style="display:none;">
+
+        <div class="filter-group">
+          <div class="filter-label"><i class="fa-solid fa-globe"></i> País</div>
+          <select id="paisFilter" class="ctrl-select" onchange="logic_updateStores()"></select>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-label"><i class="fa-solid fa-list-check"></i> Tiendas</div>
+          <div class="sel-btns">
+            <button class="sel-btn" onclick="selectAll(true)">Todas</button>
+            <button class="sel-btn" onclick="selectAll(false)">Ninguna</button>
+          </div>
+          <div class="checklist-box" id="tiendaChecklist"></div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-label"><i class="fa-solid fa-ruler-combined"></i> Métrica</div>
+          <select id="metricaFilter" class="ctrl-select" onchange="logic_renderChart()">
+            <option value="m2">Metros Cuadrados (m²)</option>
+            <option value="m3">Metros Cúbicos (m³)</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-label"><i class="fa-solid fa-chart-line"></i> Tipo de gráfico</div>
+          <select id="chartType" class="ctrl-select" onchange="logic_renderChart()">
+            <option value="line">Líneas</option>
+            <option value="bar">Barras</option>
+          </select>
+        </div>
+
+        <button class="cta-btn or-btn" style="width:100%;justify-content:center;font-size:14px;padding:11px 16px;margin-top:4px;" onclick="clearData()">
+          <i class="fa-solid fa-trash-can"></i> Limpiar datos
+        </button>
+
+      </div>
+    </aside>
+
+    <!-- CHART PANEL -->
+    <main class="chart-panel">
+      <div class="chart-topbar">
+        <div>
+          <div class="chart-meta-title" id="chartTitle">Comparativo por área comercial</div>
+          <div class="chart-meta-sub" id="chartSub">Carga un Excel para visualizar el comparativo</div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend-wrap" id="legendWrap">
+        <span style="font-size:12px;color:rgba(255,255,255,.2);font-family:'JetBrains Mono',monospace;">
+          Carga datos para ver la leyenda de tiendas
+        </span>
+      </div>
+
+      <!-- Canvas -->
+      <div class="canvas-holder">
+        <div class="empty-chart" id="emptyState">
+          <i class="fa-solid fa-chart-line"></i>
+          <div>Carga un archivo Excel para<br>visualizar el comparativo entre tiendas</div>
+        </div>
+        <canvas id="mainChart" style="display:none;"></canvas>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     05. SOLICITUDES DE CAMBIOS
+════════════════════════════════════════════ -->
+<section id="solicitudes" class="section gray">
+  <div class="section-header">
+    <div class="section-num">05 — PROCESO OFICIAL</div>
+    <h2 class="section-title">SOLICITUDES DE <em>CAMBIOS</em></h2>
+    <div class="section-rule"></div>
+    <p class="section-desc">
+      Canal oficial para enviar requerimientos de modificación técnica de fichas de tienda. Completa el formulario con el sustento técnico, económico y operativo para que el equipo de Store Planning evalúe la factibilidad del cambio propuesto.
+    </p>
+  </div>
+
+  <div class="solicitud-card">
+    <div class="solicitud-left">
+      <div class="solicitud-badge">
+        <i class="fa-solid fa-circle-dot" style="font-size:9px;"></i>
+        PROCESO ACTIVO · STORE PLANNING 2026
+      </div>
+      <div class="solicitud-title">Formulario de<br>Solicitud de Cambio</div>
+      <p class="solicitud-desc">
+        Envía tu solicitud de cambio de ficha completando el formulario oficial. Describe el tipo de cambio (menor o mayor), adjunta el sustento técnico y selecciona el área involucrada para una evaluación eficiente.
+      </p>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:12px;">
+      <a href="LINK_10" target="_blank" class="cta-btn or-btn" style="font-size:18px;padding:16px 32px;">
+        <i class="fa-solid fa-pen-to-square"></i> Ir al Formulario de Solicitudes
+      </a>
+      <span style="font-size:11px;color:var(--mu);font-family:'JetBrains Mono',monospace;">
+        Microsoft Forms · Store Planning
+      </span>
+    </div>
+  </div>
+
+  <!-- Process steps -->
+  <div style="background:var(--wh);border:1.5px solid var(--bd);border-radius:14px;padding:28px 30px;margin-top:20px;">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;margin-bottom:22px;text-transform:uppercase;letter-spacing:-.01em;">
+      Flujo del proceso de cambios
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot done"><i class="fa-solid fa-flag" style="font-size:14px;"></i></div>
+        <div class="step-lbl done">Necesidad de<br>cambio de ficha</div>
+      </div>
+      <div class="step">
+        <div class="step-dot done"><i class="fa-solid fa-file-arrow-up" style="font-size:14px;"></i></div>
+        <div class="step-lbl done">Envío de sustento<br>técnico / económico</div>
+      </div>
+      <div class="step">
+        <div class="step-dot active"><i class="fa-solid fa-magnifying-glass" style="font-size:13px;"></i></div>
+        <div class="step-lbl active">Store Planning<br>evalúa factibilidad</div>
+      </div>
+      <div class="step">
+        <div class="step-dot"><i class="fa-solid fa-people-group" style="font-size:12px;color:var(--mu);"></i></div>
+        <div class="step-lbl">Reunión integrada<br>de diseño</div>
+      </div>
+      <div class="step">
+        <div class="step-dot"><i class="fa-solid fa-check" style="font-size:13px;color:var(--mu);"></i></div>
+        <div class="step-lbl">Configuración de<br>elevaciones por rack</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ FOOTER ═══ -->
+<footer>
+  <div class="foot-brand">PROMART HOMECENTER · STORE PLANNING</div>
+  <div class="foot-copy">ACTIVOS DIGITALES · © 2026</div>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════ -->
+<script>
+// ─────────────────────────────────────────────────
+//  CONSTANTS & STATE
+// ─────────────────────────────────────────────────
+const COLORS = [
+  '#F15A22','#38bdf8','#fbbf24','#10b981',
+  '#f43f5e','#a855f7','#06b6d4','#84cc16',
+  '#fb923c','#e879f9'
+];
+
+let rawData      = [];
+let chartInst    = null;
+let currentPais  = '';
+
+// ─────────────────────────────────────────────────
+//  DRAG & DROP
+// ─────────────────────────────────────────────────
+const dropZone = document.getElementById('uploadZone');
+dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.style.borderColor = '#F15A22'; });
+dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = ''; });
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.style.borderColor = '';
+  const f = e.dataTransfer.files[0];
+  if (f) readFile(f);
+});
+
+// ─────────────────────────────────────────────────
+//  FILE INPUT
+// ─────────────────────────────────────────────────
+document.getElementById('excelInput').addEventListener('change', function(e) {
+  if (e.target.files[0]) readFile(e.target.files[0]);
+});
+
+function readFile(file) {
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    try {
+      const wb  = XLSX.read(new Uint8Array(evt.target.result), { type: 'array' });
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+      if (!rows.length) { alert('El archivo está vacío.'); return; }
+      rawData = rows;
+      document.getElementById('dynamic-controls').style.display = 'block';
+      document.getElementById('uploadZone').innerHTML =
+        `<div class="uz-icon">✅</div><p style="color:rgba(255,255,255,.6);">${rows.length} registros cargados<br><b>${file.name}</b></p>`;
+      logic_initPaises();
+    } catch(err) {
+      alert('Error al leer el archivo. Verifica que sea .xlsx o .xls');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ─────────────────────────────────────────────────
+//  INIT PAÍSES
+// ─────────────────────────────────────────────────
+function logic_initPaises() {
+  const paises = [...new Set(rawData.map(r => r.Pais || r.pais || r.PAIS || '—'))];
+  const sel = document.getElementById('paisFilter');
+  sel.innerHTML = paises.map(p => `<option value="${p}">${p}</option>`).join('');
+  currentPais = paises[0];
+  logic_updateStores();
+}
+
+// ─────────────────────────────────────────────────
+//  UPDATE TIENDAS LIST
+// ─────────────────────────────────────────────────
+function logic_updateStores() {
+  currentPais = document.getElementById('paisFilter').value;
+  const tiendas = [...new Set(
+    rawData
+      .filter(r => (r.Pais || r.pais || r.PAIS || '—') === currentPais)
+      .map(r => r.Tienda || r.tienda || r.TIENDA || '—')
+  )];
+
+  const cl = document.getElementById('tiendaChecklist');
+  cl.innerHTML = tiendas.map((t, i) => `
+    <label>
+      <input type="checkbox" class="store-cb" value="${t}" onchange="logic_renderChart()" checked>
+      <span style="display:inline-flex;align-items:center;gap:6px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:${COLORS[i % COLORS.length]};flex-shrink:0;"></span>
+        ${t}
+      </span>
+    </label>
+  `).join('');
+  logic_renderChart();
+}
+
+function selectAll(checked) {
+  document.querySelectorAll('.store-cb').forEach(cb => cb.checked = checked);
+  logic_renderChart();
+}
+
+// ─────────────────────────────────────────────────
+//  RENDER CHART
+// ─────────────────────────────────────────────────
+function logic_renderChart() {
+  const selected = Array.from(document.querySelectorAll('.store-cb:checked')).map(cb => cb.value);
+  const metrica  = document.getElementById('metricaFilter').value;
+  const type     = document.getElementById('chartType').value;
+
+  const legendEl = document.getElementById('legendWrap');
+  const emptyEl  = document.getElementById('emptyState');
+  const canvas   = document.getElementById('mainChart');
+  const sub      = document.getElementById('chartSub');
+  const title    = document.getElementById('chartTitle');
+
+  if (!selected.length) {
+    if (chartInst) chartInst.destroy();
+    canvas.style.display  = 'none';
+    emptyEl.style.display = 'flex';
+    legendEl.innerHTML = '<span style="font-size:12px;color:rgba(255,255,255,.2);font-family:JetBrains Mono,monospace;">Selecciona al menos una tienda</span>';
+    return;
+  }
+
+  const subset   = rawData.filter(r =>
+    (r.Pais || r.pais || r.PAIS || '—') === currentPais &&
+    selected.includes(r.Tienda || r.tienda || r.TIENDA || '—')
+  );
+  const areasX   = [...new Set(subset.map(r => r.Area_Comercial || r.Area || r.area || '—'))];
+  const metLabel = metrica === 'm2' ? 'Metros Cuadrados (m²)' : 'Metros Cúbicos (m³)';
+
+  title.textContent = `Comparativo ${metLabel} — ${currentPais}`;
+  sub.textContent   = `${selected.length} tienda${selected.length>1?'s':''} · ${areasX.length} áreas comerciales`;
+
+  // Build datasets
+  const datasets = selected.map((tienda, i) => {
+    const color = COLORS[i % COLORS.length];
+    const rows  = subset.filter(r => (r.Tienda || r.tienda || r.TIENDA) === tienda);
+    const vals  = areasX.map(area => {
+      const row = rows.find(r => (r.Area_Comercial || r.Area || r.area) === area);
+      return row ? parseFloat(row[metrica] || row[metrica.toUpperCase()] || 0) : 0;
+    });
+    const isLine = type === 'line';
+    return {
+      label: tienda,
+      data: vals,
+      borderColor: color,
+      backgroundColor: isLine ? color + '20' : color + 'CC',
+      tension: 0.3,
+      borderWidth: 2.5,
+      pointRadius: 4,
+      pointHoverRadius: 7,
+      fill: isLine,
+    };
+  });
+
+  // Legend
+  legendEl.innerHTML = datasets.map(ds => `
+    <div class="legend-item">
+      <div class="legend-dot" style="background:${ds.borderColor};"></div>
+      ${ds.label}
+    </div>`).join('');
+
+  // Destroy & rebuild
+  if (chartInst) chartInst.destroy();
+  emptyEl.style.display = 'none';
+  canvas.style.display  = 'block';
+
+  const ctx = canvas.getContext('2d');
+  chartInst = new Chart(ctx, {
+    type: type,
+    data: { labels: areasX, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0B1120',
+          titleColor: '#fff',
+          bodyColor: 'rgba(255,255,255,.7)',
+          borderColor: 'rgba(241,90,34,.4)',
+          borderWidth: 1,
+          padding: 12,
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('es-PE')} ${metrica === 'm2' ? 'm²' : 'm³'}`
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: 'rgba(255,255,255,.45)', font: { size: 11, family: 'Barlow' }, maxRotation: 38 }
+        },
+        y: {
+          grid: { color: 'rgba(255,255,255,.05)' },
+          ticks: {
+            color: 'rgba(255,255,255,.45)',
+            font: { size: 11, family: 'JetBrains Mono' },
+            callback: v => v.toLocaleString('es-PE') + (metrica === 'm2' ? ' m²' : ' m³')
+          }
+        }
+      },
+      animation: { duration: 500, easing: 'easeOutQuart' }
+    }
+  });
+}
+
+// ─────────────────────────────────────────────────
+//  CLEAR DATA
+// ─────────────────────────────────────────────────
+function clearData() {
+  rawData = [];
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+  document.getElementById('dynamic-controls').style.display = 'none';
+  document.getElementById('mainChart').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'flex';
+  document.getElementById('excelInput').value = '';
+  document.getElementById('legendWrap').innerHTML =
+    '<span style="font-size:12px;color:rgba(255,255,255,.2);font-family:JetBrains Mono,monospace;">Carga datos para ver la leyenda de tiendas</span>';
+  document.getElementById('chartSub').textContent = 'Carga un Excel para visualizar el comparativo';
+  document.getElementById('chartTitle').textContent = 'Comparativo por área comercial';
+  document.getElementById('uploadZone').innerHTML =
+    `<div class="uz-icon">📂</div><p>Arrastra o <b>haz clic</b> para cargar<br><span style="font-size:11px;color:rgba(255,255,255,.3);">.xlsx · .xls · .csv</span></p>`;
+}
+
+// ─────────────────────────────────────────────────
+//  DOWNLOAD TEMPLATE
+// ─────────────────────────────────────────────────
+function downloadTemplate() {
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet([
+    ['Pais', 'Tienda', 'Area_Comercial', 'm2', 'm3'],
+    ['Peru', 'Promart Chorrillos',  'Herramientas',     1850, 7400],
+    ['Peru', 'Promart Chorrillos',  'Ferretería',        920, 3680],
+    ['Peru', 'Promart Chorrillos',  'Jardín y Mascotas', 640, 2560],
+    ['Peru', 'Promart Miraflores',  'Herramientas',     1200, 4800],
+    ['Peru', 'Promart Miraflores',  'Ferretería',        680, 2720],
+    ['Peru', 'Promart Miraflores',  'Jardín y Mascotas', 480, 1920],
+    ['Peru', 'Promart Lima Norte',  'Herramientas',     2200, 8800],
+    ['Peru', 'Promart Lima Norte',  'Ferretería',       1100, 4400],
+    ['Peru', 'Promart Lima Norte',  'Jardín y Mascotas', 750, 3000],
+    ['Peru', 'Promart San Borja',   'Herramientas',      980, 3920],
+    ['Peru', 'Promart San Borja',   'Ferretería',        520, 2080],
+    ['Chile','Promart Santiago',    'Herramientas',     2100, 8400],
+    ['Chile','Promart Santiago',    'Ferretería',        980, 3920],
+    ['Chile','Promart Concepción',  'Herramientas',     1650, 6600],
+    ['Chile','Promart Concepción',  'Ferretería',        820, 3280],
+  ]);
+  ws['!cols'] = [12,22,22,10,10].map(wch => ({ wch }));
+  XLSX.utils.book_append_sheet(wb, ws, 'Datos');
+  XLSX.writeFile(wb, 'plantilla_analisis_promart.xlsx');
+}
+
+// ─────────────────────────────────────────────────
+//  NAV ACTIVE STATE ON SCROLL
+// ─────────────────────────────────────────────────
+const sections  = document.querySelectorAll('section[id], header[id]');
+const navLinks  = document.querySelectorAll('.menu a');
+const observer  = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navLinks.forEach(a => {
+        a.classList.toggle('on', a.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { threshold: 0.35 });
+sections.forEach(s => observer.observe(s));
+</script>
 </body>
 </html>
