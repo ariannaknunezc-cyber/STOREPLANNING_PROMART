@@ -2,60 +2,41 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Planning — Promart Homecenter</title>
+    <title>Store Planning — Promart</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
+    <nav class="topbar">PROMART <span>STORE PLANNING</span></nav>
 
-<nav class="topbar">
-    <div class="topbar-brand">PROMART <span>STORE PLANNING</span></div>
-    <div class="topbar-nav">
-        <a href="#fichas">Fichas</a>
-        <a href="#revit">Revit BIM</a>
-        <a href="#analisis">Análisis de Tienda</a>
-    </div>
-</nav>
-
-<section class="hero">
-    <h1>STORE<br><em>PLANNING</em></h1>
-    <p>PLATAFORMA DE ACTIVOS DIGITALES 2026</p>
-</section>
-
-<section class="metrics-section" id="analisis">
-    <div class="section-title" style="color:white; margin-bottom:15px;">03. Análisis de <span>Tienda</span></div>
-    <p style="margin-bottom: 25px; opacity: 0.7;">Compare indicadores por área comercial y elija la métrica de visualización.</p>
-    
-    <div class="upload-area" onclick="document.getElementById('excelFile').click()">
-        <span style="font-size: 40px; display: block; margin-bottom: 10px;">📊</span>
-        <strong>Cargar Excel de Tiendas</strong>
-        <input type="file" id="excelFile" style="display:none" accept=".xlsx, .xls">
-    </div>
-
-    <div class="controls-container" id="controls" style="display:none;">
-        <div class="control-group">
-            <label>Área Comercial:</label>
-            <select id="filterArea">
-                <option value="todas">Todas las Áreas</option>
-            </select>
+    <section class="container">
+        <h1>Análisis de Tienda</h1>
+        
+        <div class="upload-box" onclick="document.getElementById('excelFile').click()">
+            <p>📁 Cargar Excel de Tiendas</p>
+            <input type="file" id="excelFile" hidden accept=".xlsx, .xls">
         </div>
-        <div class="control-group">
-            <label>Métrica a comparar:</label>
-            <select id="metricType">
-                <option value="m2">Metros Cuadrados (m²)</option>
-                <option value="m3">Metros Cúbicos (m³)</option>
-            </select>
+
+        <div id="filter-panel" style="display:none;">
+            <div class="controls">
+                <label>1. Selecciona Tiendas para comparar:</label>
+                <div id="store-checkboxes" class="checkbox-grid"></div>
+                
+                <label style="margin-top:20px;">2. Ver métrica:</label>
+                <select id="metricSelector">
+                    <option value="m2">Metros Cuadrados (m²)</option>
+                    <option value="m3">Metros Cúbicos (m³)</option>
+                </select>
+                <button onclick="updateChart()" class="btn-update">Actualizar Gráfico</button>
+            </div>
         </div>
-    </div>
 
-    <div class="chart-container">
-        <canvas id="storeChart" height="100"></canvas>
-    </div>
-</section>
+        <div class="chart-container">
+            <canvas id="storeChart"></canvas>
+        </div>
+    </section>
 
-<footer>PROMART HOMECENTER — 2026</footer>
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
