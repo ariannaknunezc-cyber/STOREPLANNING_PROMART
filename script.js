@@ -17,6 +17,7 @@ document.getElementById('excelInput').addEventListener('change', function(e) {
 });
 
 function logic_initPaises() {
+    // Captura todos los países únicos del Excel
     const paises = [...new Set(rawData.map(item => item.Pais))];
     const select = document.getElementById('paisFilter');
     select.innerHTML = paises.map(p => `<option value="${p}">${p}</option>`).join('');
@@ -25,13 +26,14 @@ function logic_initPaises() {
 
 function logic_updateStores() {
     const selectedPais = document.getElementById('paisFilter').value;
-    // Filtrar todas las tiendas que pertenecen al país seleccionado
-    const tiendasFiltradas = [...new Set(rawData
+    
+    // FILTRADO CORRECTO: Encuentra todas las tiendas que pertenecen al país seleccionado
+    const tiendasDelPais = [...new Set(rawData
         .filter(item => item.Pais === selectedPais)
         .map(item => item.Tienda))];
     
     const checklist = document.getElementById('tiendaChecklist');
-    checklist.innerHTML = tiendasFiltradas.map((tienda, index) => `
+    checklist.innerHTML = tiendasDelPais.map((tienda) => `
         <label>
             <input type="checkbox" class="store-cb" value="${tienda}" onchange="logic_renderChart()" checked>
             ${tienda}
@@ -46,17 +48,15 @@ function logic_renderChart() {
     const metrica = document.getElementById('metricaFilter').value;
     const legendContainer = document.getElementById('chart-legend');
     
-    // Si no hay tiendas seleccionadas, limpiar gráfico
     if (selectedStores.length === 0) {
         if(chartInstance) chartInstance.destroy();
         legendContainer.innerHTML = '';
         return;
     }
 
-    // Definir colores corporativos
     const colorPalette = ['#F15A22', '#38bdf8', '#fbbf24', '#10b981', '#f43f5e', '#a855f7', '#06b6d4'];
     
-    // Obtener áreas únicas (eje X) de las tiendas seleccionadas
+    // Eje X: Áreas Comerciales únicas de las tiendas seleccionadas
     const dataForChart = rawData.filter(item => selectedStores.includes(item.Tienda));
     const areasX = [...new Set(dataForChart.map(item => item.Area_Comercial))];
 
@@ -64,7 +64,6 @@ function logic_renderChart() {
         const color = colorPalette[i % colorPalette.length];
         const storeRows = dataForChart.filter(r => r.Tienda === tienda);
         
-        // Mapear valores según el eje X
         const values = areasX.map(area => {
             const row = storeRows.find(r => r.Area_Comercial === area);
             return row ? row[metrica] : 0;
@@ -81,7 +80,7 @@ function logic_renderChart() {
         };
     });
 
-    // Actualizar Leyenda Visual
+    // Crear Leyenda Manual con Colores
     legendContainer.innerHTML = datasets.map(ds => `
         <div class="legend-item">
             <div class="legend-color" style="background:${ds.borderColor}"></div>
@@ -100,15 +99,8 @@ function logic_renderChart() {
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                y: { 
-                    beginAtZero: true, 
-                    grid: { color: '#1e293b' },
-                    ticks: { color: '#94a3b8' } 
-                },
-                x: { 
-                    grid: { display: false },
-                    ticks: { color: '#94a3b8' } 
-                }
+                y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+                x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
             }
         }
     });
