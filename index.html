@@ -2,41 +2,56 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Store Planning — Promart</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
-    <nav class="topbar">PROMART <span>STORE PLANNING</span></nav>
 
-    <section class="container">
-        <h1>Análisis de Tienda</h1>
-        
+<nav class="topbar">
+    <div class="topbar-brand">PROMART <span>STORE PLANNING</span></div>
+    <div class="topbar-nav">
+        <a href="#analisis">Análisis de Tienda</a>
+        <a href="https://forms.office.com" target="_blank">Solicitudes</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <h1>ANÁLISIS DE <br><span>TIENDA</span></h1>
+    <p>Comparativa de Áreas Comerciales, m² y m³</p>
+</section>
+
+<section class="main-content" id="analisis">
+    <div class="upload-container">
         <div class="upload-box" onclick="document.getElementById('excelFile').click()">
-            <p>📁 Cargar Excel de Tiendas</p>
+            <span>📊</span>
+            <strong>Cargar Excel de Tiendas</strong>
+            <p>Formato requerido: Tienda | Area_Comercial | m2 | m3</p>
             <input type="file" id="excelFile" hidden accept=".xlsx, .xls">
         </div>
+    </div>
 
-        <div id="filter-panel" style="display:none;">
-            <div class="controls">
-                <label>1. Selecciona Tiendas para comparar:</label>
-                <div id="store-checkboxes" class="checkbox-grid"></div>
-                
-                <label style="margin-top:20px;">2. Ver métrica:</label>
-                <select id="metricSelector">
-                    <option value="m2">Metros Cuadrados (m²)</option>
-                    <option value="m3">Metros Cúbicos (m³)</option>
-                </select>
-                <button onclick="updateChart()" class="btn-update">Actualizar Gráfico</button>
+    <div class="dashboard" id="dashboard" style="display:none;">
+        <aside class="sidebar">
+            <h3>Seleccionar Tiendas</h3>
+            <p>Elige las tiendas para comparar sus áreas:</p>
+            <div id="store-list" class="store-list">
+                </div>
+            <button class="btn-refresh" onclick="updateChart()">Actualizar Gráfico</button>
+        </aside>
+
+        <main class="chart-area">
+            <div class="chart-card">
+                <canvas id="storeChart"></canvas>
             </div>
-        </div>
+        </main>
+    </div>
+</section>
 
-        <div class="chart-container">
-            <canvas id="storeChart"></canvas>
-        </div>
-    </section>
+<footer>PROMART HOMECENTER — 2026</footer>
 
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
