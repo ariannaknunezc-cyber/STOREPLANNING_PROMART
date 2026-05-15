@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Planning — Portal Maestro 2026</title>
+    <title>Portal Store Planning | Promart</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -24,71 +24,55 @@
 
 <section id="fichas" class="section">
     <h2 class="section-title">01. Fichas de <span>Tienda Ideal</span></h2>
-    <p class="section-desc">Estandarización de prototipos arquitectónicos y técnicos para la red de tiendas Promart.</p>
-    <div class="grid-fichas">
-        <div class="card-ficha">
-            <h3>TIENDA ALTA</h3>
-            <p>Picada 5.00 HMY</p>
-            <a href="#" class="btn-action">Descargar Ficha</a>
-        </div>
-        <div class="card-ficha">
-            <h3>TIENDA BAJA</h3>
-            <p>Picada 7.50 JRM</p>
-            <a href="#" class="btn-action">Descargar Ficha</a>
-        </div>
+    <p class="section-desc">Acceda a los prototipos estandarizados que definen la arquitectura técnica y comercial de nuestras tiendas según su formato y flujo logístico.</p>
+    <div class="grid-buttons">
+        <a href="#" class="btn-card"><strong>TIENDA ALTA:</strong> Picada 5.00 HMY</a>
+        <a href="#" class="btn-card"><strong>TIENDA BAJA:</strong> Picada 7.50 JRM</a>
     </div>
 </section>
 
 <section id="bim" class="section gray">
     <h2 class="section-title">02. Repositorio <span>BIM</span></h2>
-    <p class="section-desc">Biblioteca centralizada de activos digitales para diseño y construcción en Revit.</p>
-    <div class="list-bim">
-        <div class="bim-item"><span>A</span> PLANTILLA BASE</div>
-        <div class="bim-item"><span>B</span> FAMILIAS RACKS METÁLICOS HMY</div>
-        <div class="bim-item"><span>C</span> FAMILIAS RACKS METÁLICOS JRM</div>
-        <div class="bim-item"><span>D</span> FAMILIAS GÓNDOLAS</div>
-        <div class="bim-item"><span>E</span> FAMILIAS CARPINTERÍA</div>
-        <div class="bim-item"><span>F</span> FAMILIAS INSTALACIONES ELÉCTRICAS</div>
+    <p class="section-desc">Descargue las familias paramétricas y plantillas oficiales desarrolladas en Revit para garantizar la precisión en el diseño de Layouts.</p>
+    <div class="grid-bim">
+        <a href="#" class="bim-btn"><span>A</span> PLANTILLA BASE</a>
+        <a href="#" class="bim-btn"><span>B</span> FAMILIAS RACKS METÁLICOS HMY</a>
+        <a href="#" class="bim-btn"><span>C</span> FAMILIAS RACKS METÁLICOS JRM</a>
+        <a href="#" class="bim-btn"><span>D</span> FAMILIAS GÓNDOLAS</a>
+        <a href="#" class="bim-btn"><span>E</span> FAMILIAS CARPINTERÍA</a>
+        <a href="#" class="bim-btn"><span>F</span> FAMILIAS INSTALACIONES ELÉCTRICAS</a>
     </div>
 </section>
 
 <section id="acuerdos" class="section">
     <h2 class="section-title">03. Acuerdos <span>del Área</span></h2>
-    <p class="section-desc">Centralización de lineamientos estratégicos, actas de reunión y compromisos del equipo.</p>
-    <div class="center-btn">
-        <a href="https://tu-link-de-actas.com" target="_blank" class="btn-promart">Ir a Actas de Acuerdos</a>
+    <p class="section-desc">Registro oficial de lineamientos, actas de reuniones y compromisos estratégicos establecidos por el equipo de Store Planning.</p>
+    <div class="action-center">
+        <a href="https://tudominio.com/actas" target="_blank" class="main-btn">Ir a Actas de Acuerdos <i class="fa-solid fa-arrow-right"></i></a>
     </div>
 </section>
 
 <section id="analisis" class="section dark">
-    <h2 class="section-title">04. Análisis de <span>Tienda</span></h2>
-    
-    <div class="dashboard">
+    <h2 class="section-title" style="color:white">04. Análisis de <span>Tienda</span></h2>
+    <div class="dashboard-container">
         <aside class="sidebar">
             <div class="filter-group">
-                <label><i class="fa-solid fa-file-excel"></i> Subir Formato Excel</label>
+                <label>Cargar Formato Excel</label>
                 <input type="file" id="excelInput" accept=".xlsx, .xls">
             </div>
 
-            <div id="controls" style="display:none">
+            <div id="dynamic-controls" style="display:none">
                 <div class="filter-group">
                     <label>Elegir País</label>
-                    <select id="paisFilter" onchange="actualizarListaTiendas()"></select>
+                    <select id="paisFilter" onchange="logic_updateStores()"></select>
                 </div>
-
                 <div class="filter-group">
                     <label>Comparar Tiendas</label>
-                    <div id="tiendaChecklist" class="checklist"></div>
+                    <div id="tiendaChecklist" class="checklist-container"></div>
                 </div>
-
                 <div class="filter-group">
-                    <label>Área Específica</label>
-                    <select id="areaFilter" onchange="renderizarGrafico()"></select>
-                </div>
-
-                <div class="filter-group">
-                    <label>Métrica</label>
-                    <select id="metricaFilter" onchange="renderizarGrafico()">
+                    <label>Métrica de Análisis</label>
+                    <select id="metricaFilter" onchange="logic_renderChart()">
                         <option value="m2">Metros Cuadrados (m²)</option>
                         <option value="m3">Metros Cúbicos (m³)</option>
                     </select>
@@ -96,22 +80,24 @@
             </div>
         </aside>
 
-        <main class="chart-box">
-            <div id="leyenda" class="custom-legend"></div>
-            <canvas id="lineChart"></canvas>
+        <main class="chart-area">
+            <div id="chart-legend" class="dynamic-legend"></div>
+            <div class="canvas-holder">
+                <canvas id="mainChart"></canvas>
+            </div>
         </main>
     </div>
 </section>
 
 <section id="solicitudes" class="section">
-    <h2 class="section-title">05. Solicitudes de <span>Cambio</span></h2>
-    <p class="section-desc">Gestión formal de modificaciones para fichas técnicas y activos digitales.</p>
-    <div class="center-btn">
-        <a href="https://forms.microsoft.com/tu-link" target="_blank" class="btn-promart">Formulario de Solicitudes</a>
+    <h2 class="section-title">05. Solicitudes de <span>Cambios</span></h2>
+    <p class="section-desc">Si requiere modificar una ficha técnica o un activo BIM, envíe su requerimiento formal a través de nuestro canal de gestión.</p>
+    <div class="action-center">
+        <a href="https://forms.office.com/tu-link" target="_blank" class="main-btn orange-btn">Formulario de Solicitudes <i class="fa-solid fa-file-signature"></i></a>
     </div>
 </section>
 
-<footer>PROMART HOMECENTER &copy; 2026 — Store Planning Team</footer>
+<footer>PROMART HOMECENTER &copy; 2026 — Store Planning Intelligence</footer>
 
 <script src="script.js"></script>
 </body>
