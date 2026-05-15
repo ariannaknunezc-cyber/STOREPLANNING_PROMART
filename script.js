@@ -1,86 +1,95 @@
-let rawStoreData = [];
-let myChart = null;
+let storeData = [];
+let chartInstance = null;
 
-const excelInput = document.getElementById('excelFile');
-
-excelInput.addEventListener('change', function(e) {
-    const file = e.target.files[0];
+document.getElementById('excelFile').addEventListener('change', function(e) {
     const reader = new FileReader();
-
     reader.onload = function(evt) {
         const data = new Uint8Array(evt.target.result);
         const workbook = XLSX.read(data, {type: 'array'});
-        const sheetName = workbook.SheetNames[0];
-        rawStoreData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-
-        if(rawStoreData.length > 0) {
-            renderSidebar();
-            document.getElementById('dashboard').style.display = 'grid';
-            updateChart(); // Primera carga automática
+        storeData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+        
+        if(storeData.length > 0) {
+            initControls();
+            document.getElementById('filter-section').style.display = 'block';
+            updateChart();
         }
     };
-    reader.readAsArrayBuffer(file);
+    reader.readAsArrayBuffer(e.target.files[0]);
 });
 
-function renderSidebar() {
-    const container = document.getElementById('store-list');
-    container.innerHTML = '';
+function initControls() {
+    const storeList = document.getElementById('store-list');
+    const areaFilter = document.getElementById('areaFilter');
     
-    rawStoreData.forEach((item, index) => {
-        const div = document.createElement('label');
+    // Limpiar
+    storeList.innerHTML = '';
+    areaFilter.innerHTML = '<option value="all">Todas las Áreas</option>';
+
+    // Tiendas Únicas para Checkboxes
+    storeData.forEach((item, index) => {
+        const div = document.createElement('div');
         div.className = 'store-item';
-        div.innerHTML = `
-            <input type="checkbox" checked value="${index}" class="store-check">
-            <span>${item.Tienda}</span>
-        `;
-        container.appendChild(div);
+        div.innerHTML = `<input type="checkbox" checked value="${index}" class="store-cb"> <span>${item.Tienda}</span>`;
+        storeList.appendChild(div);
+    });
+
+    // Áreas Únicas para el Selector
+    const areas = [...new Set(storeData.map(item => item.Area_Comercial))];
+    areas.forEach(area => {
+        if(area) areaFilter.innerHTML += `<option value="${area}">${area}</option>`;
     });
 }
 
 function updateChart() {
-    const selectedIndices = Array.from(document.querySelectorAll('.store-check:checked')).map(cb => parseInt(cb.value));
-    const filteredData = rawStoreData.filter((_, index) => selectedIndices.includes(index));
+    const selectedIndices = Array.from(document.querySelectorAll('.store-cb:checked')).map(cb => parseInt(cb.value));
+    const areaVal = document.getElementById('areaFilter').value;
 
-    // Eje X: Áreas Comerciales
-    const labels = filteredData.map(item => item.Area_Comercial || 'S/N');
-    const m2Values = filteredData.map(item => item.m2 || 0);
-    const m3Values = filteredData.map(item => item.m3 || 0);
-    const tiendas = filteredData.map(item => item.Tienda);
+    let filtered = storeData.filter((_, index) => selectedIndices.includes(index));
+    
+    if (areaVal !== 'all') {
+        filtered = filtered.filter(item => item.Area_Comercial === areaVal);
+    }
 
-    if (myChart) myChart.destroy();
+    const labels = filtered.map(item => item.Area_Comercial || 'S/N');
+    const m2Data = filtered.map(item => item.m2 || 0);
+    const m3Data = filtered.map(item => item.m3 || 0);
+    const tiendas = filtered.map(item => item.Tienda);
 
-    const ctx = document.getElementById('storeChart').getContext('2d');
-    myChart = new Chart(ctx, {
-        type: 'line', // Tipo de gráfico: Línea
+    if (chartInstance) chartInstance.destroy();
+
+    const ctx = document.getElementById('capexChart').getContext('2d');
+    chartInstance = new Chart(ctx, {
+        type: 'line',
         data: {
             labels: labels,
             datasets: [
                 {
-                    label: 'Metros Cuadrados (m²)',
-                    data: m2Values,
-                    borderColor: '#F15A22',
-                    backgroundColor: 'rgba(241, 90, 34, 0.2)',
+                    label: 'm²',
+                    data: m2Data,
+                    borderColor: '#ec4899',
+                    backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                    borderWidth: 4,
+                    tension: 0.4,
                     fill: true,
-                    tension: 0.3,
-                    borderWidth: 3,
-                    pointRadius: 5
+                    pointRadius: 6
                 },
                 {
-                    label: 'Metros Cúbicos (m³)',
-                    data: m3Values,
-                    borderColor: '#111111',
-                    backgroundColor: 'rgba(17, 17, 17, 0.1)',
+                    label: 'm³',
+                    data: m3Data,
+                    borderColor: '#14b8a6',
+                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                    borderWidth: 4,
+                    tension: 0.4,
                     fill: true,
-                    tension: 0.3,
-                    borderWidth: 3,
-                    pointRadius: 5
+                    pointRadius: 6
                 }
             ]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
-                legend: { position: 'top' },
+                legend: { display: false },
                 tooltip: {
                     callbacks: {
                         afterLabel: (context) => `Tienda: ${tiendas[context.dataIndex]}`
@@ -89,12 +98,13 @@ function updateChart() {
             },
             scales: {
                 x: { 
-                    title: { display: true, text: 'ÁREAS COMERCIALES' },
-                    grid: { display: false }
+                    ticks: { color: '#94a3b8' },
+                    grid: { display: false },
+                    title: { display: true, text: 'ÁREA COMERCIAL', color: '#64748b' }
                 },
                 y: { 
-                    title: { display: true, text: 'VALORES METRICOS' },
-                    beginAtZero: true 
+                    ticks: { color: '#94a3b8' },
+                    grid: { color: 'rgba(255,255,255,0.1)' }
                 }
             }
         }
