@@ -1,40 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap');
 
-:root { --or: #F15A22; --dark: #111; --light: #f4f4f4; }
+:root { --or: #F15A22; --nv: #0f172a; --bg: #f8fafc; }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Barlow', sans-serif; background: var(--light); color: #333; scroll-behavior: smooth; }
+body { font-family: 'Barlow', sans-serif; background: var(--bg); color: #333; line-height: 1.6; }
 
-.navbar { background: var(--dark); padding: 15px 5%; display: flex; justify-content: space-between; border-bottom: 3px solid var(--or); position: sticky; top:0; z-index:100; }
+.navbar { background: var(--nv); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--or); position: sticky; top: 0; z-index: 1000; }
 .logo { color: white; font-family: 'Barlow Condensed'; font-size: 24px; font-weight: 900; }
 .logo span { color: var(--or); }
-.menu a { color: #ccc; text-decoration: none; margin-left: 20px; font-weight: 600; font-size: 14px; text-transform: uppercase; }
+.menu a { color: #cbd5e1; text-decoration: none; margin-left: 20px; font-weight: 600; font-size: 13px; text-transform: uppercase; }
 
-.hero { background: var(--dark); color: white; padding: 100px 5%; text-align: left; }
-.hero h1 { font-family: 'Barlow Condensed'; font-size: 70px; line-height: 0.9; }
-.hero h1 span { color: var(--or); }
-
-.section { padding: 80px 5%; }
-.section-title { font-family: 'Barlow Condensed'; font-size: 40px; text-transform: uppercase; margin-bottom: 40px; }
+.section { padding: 80px 5%; max-width: 1300px; margin: auto; }
+.section-title { font-family: 'Barlow Condensed'; font-size: 45px; text-transform: uppercase; margin-bottom: 10px; }
 .section-title span { color: var(--or); }
-.gray { background: #e8e8e8; }
-.dark { background: #0a0a0a; color: white; }
+.section-desc { color: #64748b; font-size: 18px; margin-bottom: 40px; }
+.gray { background: #f1f5f9; max-width: 100%; }
+.dark { background: #020617; color: white; max-width: 100%; }
 
-.grid-container, .grid-revit { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-.card, .item { background: white; padding: 40px; text-align: center; border-radius: 8px; border-bottom: 4px solid var(--or); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+/* Fichas */
+.grid-fichas { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.card-ficha { background: white; padding: 40px; border-radius: 12px; border-left: 8px solid var(--or); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+.btn-action { display: inline-block; margin-top: 15px; color: var(--or); font-weight: 700; text-decoration: none; }
 
-.acuerdos-box { background: white; padding: 40px; border-radius: 12px; border-left: 8px solid var(--or); }
-.acuerdos-box ul { margin-top: 20px; margin-left: 20px; }
+/* BIM */
+.list-bim { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+.bim-item { background: white; padding: 20px; border-radius: 8px; font-weight: 600; display: flex; align-items: center; gap: 15px; }
+.bim-item span { background: var(--or); color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 4px; }
 
 /* Dashboard */
-.dashboard-grid { display: grid; grid-template-columns: 320px 1fr; gap: 30px; }
-.sidebar { background: #1a1a1a; padding: 30px; border-radius: 12px; height: fit-content; }
-.filter-box { margin-bottom: 20px; }
-.filter-box label { display: block; color: var(--or); font-weight: 700; font-size: 12px; text-transform: uppercase; margin-bottom: 8px; }
-select, input { width: 100%; padding: 10px; border-radius: 4px; border: none; background: #333; color: white; }
-.checklist { background: #222; height: 150px; overflow-y: auto; padding: 10px; border-radius: 4px; }
-.checklist label { display: block; font-size: 13px; color: #fff; margin-bottom: 5px; cursor: pointer; text-transform: none; }
-.btn-update { width: 100%; background: var(--or); color: white; border: none; padding: 15px; font-weight: 700; cursor: pointer; border-radius: 4px; margin-top: 10px; }
+.dashboard { display: grid; grid-template-columns: 300px 1fr; gap: 30px; margin-top: 30px; }
+.sidebar { background: #1e293b; padding: 25px; border-radius: 12px; height: fit-content; }
+.filter-group { margin-bottom: 20px; }
+.filter-group label { display: block; color: var(--or); font-weight: 700; font-size: 12px; text-transform: uppercase; margin-bottom: 8px; }
+select, input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; }
+.checklist { background: #0f172a; height: 160px; overflow-y: auto; padding: 10px; border-radius: 6px; border: 1px solid #334155; }
+.checklist label { display: block; font-size: 13px; margin-bottom: 8px; cursor: pointer; }
 
-.chart-area { background: #000; border-radius: 12px; padding: 30px; min-height: 500px; }
-.chart-wrapper { position: relative; height: 450px; }
+.chart-box { background: #0f172a; padding: 30px; border-radius: 12px; min-height: 500px; position: relative; }
+.custom-legend { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; justify-content: center; }
+
+.btn-promart { background: var(--or); color: white; padding: 15px 30px; text-decoration: none; border-radius: 6px; font-weight: 700; text-transform: uppercase; display: inline-block; }
+.center-btn { text-align: center; }
+footer { text-align: center; padding: 40px; font-size: 12px; color: #94a3b8; }
