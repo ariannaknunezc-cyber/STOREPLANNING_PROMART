@@ -1,43 +1,62 @@
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap');
 
-:root { --or: #F15A22; --nv: #111111; --gr: #F5F3F0; --bd: #E8E4DF; }
+:root {
+    --or: #F15A22;
+    --nv: #111111;
+    --gr: #f8f9fa;
+    --tx: #1a1a1a;
+}
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--gr); font-family: 'Barlow', sans-serif; color: #333; }
+body { font-family: 'Barlow', sans-serif; background: var(--gr); color: var(--tx); line-height: 1.6; }
 
 /* Navegación */
-.topbar { background: var(--nv); height: 60px; display: flex; align-items: center; padding: 0 30px; position: sticky; top: 0; z-index: 100; border-bottom: 3px solid var(--or); }
-.topbar-brand { color: white; font-family: 'Barlow Condensed'; font-size: 24px; font-weight: 800; }
+.topbar { background: var(--nv); height: 60px; display: flex; align-items: center; padding: 0 5%; position: sticky; top: 0; z-index: 100; border-bottom: 3px solid var(--or); }
+.topbar-brand { color: white; font-family: 'Barlow Condensed'; font-size: 22px; font-weight: 800; }
 .topbar-brand span { color: var(--or); }
-.topbar-nav { margin-left: auto; }
-.topbar-nav a { color: #ccc; text-decoration: none; font-weight: 600; font-size: 14px; margin-left: 20px; text-transform: uppercase; }
+.topbar-nav { margin-left: auto; display: flex; gap: 20px; }
+.topbar-nav a { color: #ccc; text-decoration: none; font-weight: 600; font-size: 13px; text-transform: uppercase; }
+.btn-solicitud { color: var(--or) !important; border: 1px solid var(--or); padding: 5px 15px; border-radius: 4px; }
 
 /* Hero */
-.hero { background: var(--nv); padding: 60px 30px; color: white; text-align: left; }
+.hero { background: var(--nv); color: white; padding: 80px 5%; }
 .hero h1 { font-family: 'Barlow Condensed'; font-size: 60px; line-height: 0.9; }
 .hero h1 span { color: var(--or); }
-.hero p { opacity: 0.6; margin-top: 10px; letter-spacing: 1px; }
+.hero p { opacity: 0.6; margin-top: 15px; font-size: 20px; }
 
-/* Upload Section */
-.upload-container { padding: 40px 30px; max-width: 1200px; margin: auto; }
-.upload-box { border: 2px dashed var(--or); padding: 40px; text-align: center; border-radius: 12px; cursor: pointer; background: white; transition: 0.3s; }
-.upload-box:hover { background: #fff5f0; }
-.upload-box span { font-size: 40px; display: block; margin-bottom: 10px; }
+/* Secciones */
+.section-container { padding: 60px 5%; max-width: 1400px; margin: auto; }
+.section-title { font-family: 'Barlow Condensed'; font-size: 32px; margin-bottom: 30px; text-transform: uppercase; }
+.section-title span { color: var(--or); }
+.bg-alt { background: #eee; }
 
-/* Dashboard Layout */
-.dashboard { display: grid; grid-template-columns: 300px 1fr; gap: 30px; padding: 0 30px 60px; max-width: 1400px; margin: auto; }
+/* Cards */
+.grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-top: 4px solid var(--or); }
+.btn-main { display: inline-block; margin-top: 20px; background: var(--nv); color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: 600; }
 
-/* Sidebar Izquierda */
-.sidebar { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); height: fit-content; }
-.sidebar h3 { font-family: 'Barlow Condensed'; font-size: 22px; margin-bottom: 15px; border-bottom: 2px solid var(--or); padding-bottom: 5px; }
-.store-list { max-height: 400px; overflow-y: auto; margin: 15px 0; }
-.store-item { display: flex; align-items: center; margin-bottom: 10px; font-size: 14px; cursor: pointer; }
-.store-item input { margin-right: 10px; accent-color: var(--or); width: 18px; height: 18px; }
+/* Revit Grid */
+.grid-revit { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+.revit-item { background: white; padding: 20px; text-align: center; border: 1px solid #ddd; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+.revit-item:hover { border-color: var(--or); color: var(--or); }
 
-.btn-refresh { width: 100%; background: var(--or); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.3s; }
-.btn-refresh:hover { background: #d4491a; }
+/* Dashboard Gráfico */
+.dashboard-container { display: grid; grid-template-columns: 320px 1fr; gap: 30px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+.dashboard-sidebar { background: #f1f1f1; padding: 30px; border-right: 1px solid #ddd; }
+.control-box { margin-bottom: 25px; }
+.control-box label { display: block; font-weight: 700; margin-bottom: 10px; font-size: 14px; color: var(--or); text-transform: uppercase; }
+.store-selector { background: white; border: 1px solid #ccc; height: 200px; overflow-y: auto; padding: 10px; border-radius: 4px; }
+.store-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px; }
+.input-file { width: 100%; font-size: 12px; }
+select { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; }
+.btn-update { width: 100%; background: var(--or); color: white; border: none; padding: 12px; font-weight: 700; cursor: pointer; border-radius: 4px; }
 
-/* Gráfico Area */
-.chart-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.chart-view { padding: 30px; background: #111; position: relative; }
+.chart-header { display: flex; gap: 20px; margin-bottom: 20px; justify-content: flex-end; }
+.legend-item { color: white; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot.m2 { background: #ec4899; }
+.dot.m3 { background: #14b8a6; }
+.canvas-holder { height: 450px; position: relative; }
 
-footer { text-align: center; padding: 40px; background: #eee; color: #777; font-size: 12px; }
+footer { text-align: center; padding: 40px; font-size: 12px; color: #777; }
