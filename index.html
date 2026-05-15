@@ -26,8 +26,14 @@
     <h2 class="section-title">01. Fichas de <span>Tienda Ideal</span></h2>
     <p class="section-desc">Documentación técnica estandarizada para el diseño de prototipos según formato de tienda y proveedor de equipamiento.</p>
     <div class="grid-buttons">
-        <a href="LINK_1" class="btn-card" target="_blank"><strong>TIENDA ALTA:</strong> Picada 5.00 HMY</a>
-        <a href="LINK_2" class="btn-card" target="_blank"><strong>TIENDA BAJA:</strong> Picada 7.50 JRM</a>
+        <a href="LINK_1" class="btn-card" target="_blank">
+            <i class="fa-solid fa-building-circle-check"></i>
+            <div><strong>TIENDA ALTA:</strong><br>Picada 5.00 HMY</div>
+        </a>
+        <a href="LINK_2" class="btn-card" target="_blank">
+            <i class="fa-solid fa-building-flag"></i>
+            <div><strong>TIENDA BAJA:</strong><br>Picada 7.50 JRM</div>
+        </a>
     </div>
 </section>
 
@@ -35,20 +41,22 @@
     <h2 class="section-title">02. Repositorio <span>BIM</span></h2>
     <p class="section-desc">Acceso a familias paramétricas y plantillas oficiales de Revit para la unificación de criterios en el modelado de activos.</p>
     <div class="grid-bim">
-        <a href="LINK_3" class="bim-btn" target="_blank"><span>A</span> PLANTILLA BASE</a>
-        <a href="LINK_4" class="bim-btn" target="_blank"><span>B</span> FAMILIAS RACKS METALICOS HMY</a>
-        <a href="LINK_5" class="bim-btn" target="_blank"><span>C</span> FAMILIAS RACKS METALICOS JRM</a>
-        <a href="LINK_6" class="bim-btn" target="_blank"><span>D</span> FAMILIAS GONDOLAS</a>
-        <a href="LINK_7" class="bim-btn" target="_blank"><span>E</span> FAMILIAS CARPINTERIA</a>
-        <a href="LINK_8" class="bim-btn" target="_blank"><span>F</span> FAMILIAS INSTALACIONES ELECTRICAS</a>
+        <a href="LINK_3" class="bim-btn" target="_blank"><i class="fa-solid fa-layer-group"></i> A. PLANTILLA BASE</a>
+        <a href="LINK_4" class="bim-btn" target="_blank"><i class="fa-solid fa-boxes-stacked"></i> B. FAMILIAS RACKS HMY</a>
+        <a href="LINK_5" class="bim-btn" target="_blank"><i class="fa-solid fa-warehouse"></i> C. FAMILIAS RACKS JRM</a>
+        <a href="LINK_6" class="bim-btn" target="_blank"><i class="fa-solid fa-table-cells"></i> D. FAMILIAS GONDOLAS</a>
+        <a href="LINK_7" class="bim-btn" target="_blank"><i class="fa-solid fa-chair"></i> E. FAMILIAS CARPINTERIA</a>
+        <a href="LINK_8" class="bim-btn" target="_blank"><i class="fa-solid fa-plug-circle-bolt"></i> F. INSTALACIONES ELECTRICAS</a>
     </div>
 </section>
 
 <section id="acuerdos" class="section">
     <h2 class="section-title">03. Acuerdos <span>del Área</span></h2>
     <p class="section-desc">Repositorio de actas, acuerdos de comité y lineamientos estratégicos establecidos para la gestión de proyectos del área.</p>
-    <div class="action-center">
-        <a href="LINK_9" target="_blank" class="main-btn">Ir a Actas de Acuerdos <i class="fa-solid fa-arrow-right"></i></a>
+    <div class="left-align">
+        <a href="LINK_9" target="_blank" class="main-btn">
+            <i class="fa-solid fa-handshake"></i> Ir a Actas de Acuerdos
+        </a>
     </div>
 </section>
 
@@ -57,24 +65,24 @@
     <div class="dashboard-container">
         <aside class="sidebar">
             <div class="filter-group">
-                <label>Cargar Formato Excel</label>
+                <label><i class="fa-solid fa-file-arrow-up"></i> Cargar Formato Excel</label>
                 <input type="file" id="excelInput" accept=".xlsx, .xls">
             </div>
 
             <div id="dynamic-controls" style="display:none">
                 <div class="filter-group">
-                    <label>Elegir País</label>
+                    <label><i class="fa-solid fa-earth-americas"></i> Elegir País</label>
                     <select id="paisFilter" onchange="logic_updateStores()"></select>
                 </div>
                 <div class="filter-group">
-                    <label>Comparar Tiendas</label>
+                    <label><i class="fa-solid fa-shop"></i> Comparar Tiendas</label>
                     <div id="tiendaChecklist" class="checklist-container"></div>
                 </div>
                 <div class="filter-group">
-                    <label>Métrica de Análisis</label>
+                    <label><i class="fa-solid fa-chart-line"></i> Métrica de Análisis</label>
                     <select id="metricaFilter" onchange="logic_renderChart()">
-                        <option value="m2">Metros Cuadrados (m²)</option>
-                        <option value="m3">Metros Cúbicos (m³)</option>
+                        <option value="m2">Superficie (m²)</option>
+                        <option value="m3">Volumen (m³)</option>
                     </select>
                 </div>
             </div>
@@ -92,8 +100,10 @@
 <section id="solicitudes" class="section">
     <h2 class="section-title">05. Solicitudes de <span>Cambios</span></h2>
     <p class="section-desc">Canal oficial para la solicitud de modificaciones en fichas técnicas, catálogos BIM o actualizaciones de layout.</p>
-    <div class="action-center">
-        <a href="LINK_10" target="_blank" class="main-btn orange-btn">Formulario de Solicitudes <i class="fa-solid fa-file-signature"></i></a>
+    <div class="left-align">
+        <a href="LINK_10" target="_blank" class="main-btn orange-btn">
+            <i class="fa-solid fa-file-pen"></i> Formulario de Solicitudes
+        </a>
     </div>
 </section>
 
