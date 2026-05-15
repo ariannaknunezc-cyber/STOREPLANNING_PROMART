@@ -1,111 +1,75 @@
-let storeData = [];
-let chartInstance = null;
+let rawData = [];
+let chart;
 
 document.getElementById('excelFile').addEventListener('change', function(e) {
     const reader = new FileReader();
     reader.onload = function(evt) {
         const data = new Uint8Array(evt.target.result);
         const workbook = XLSX.read(data, {type: 'array'});
-        storeData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+        rawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
         
-        if(storeData.length > 0) {
-            initControls();
-            document.getElementById('filter-section').style.display = 'block';
-            updateChart();
+        if(rawData.length > 0) {
+            document.getElementById('controls').style.display = 'block';
+            document.getElementById('noData').style.display = 'none';
+            inicializarFiltroPais();
         }
     };
     reader.readAsArrayBuffer(e.target.files[0]);
 });
 
-function initControls() {
-    const storeList = document.getElementById('store-list');
-    const areaFilter = document.getElementById('areaFilter');
-    
-    // Limpiar
-    storeList.innerHTML = '';
-    areaFilter.innerHTML = '<option value="all">Todas las Áreas</option>';
-
-    // Tiendas Únicas para Checkboxes
-    storeData.forEach((item, index) => {
-        const div = document.createElement('div');
-        div.className = 'store-item';
-        div.innerHTML = `<input type="checkbox" checked value="${index}" class="store-cb"> <span>${item.Tienda}</span>`;
-        storeList.appendChild(div);
-    });
-
-    // Áreas Únicas para el Selector
-    const areas = [...new Set(storeData.map(item => item.Area_Comercial))];
-    areas.forEach(area => {
-        if(area) areaFilter.innerHTML += `<option value="${area}">${area}</option>`;
-    });
+function inicializarFiltroPais() {
+    const paises = [...new Set(rawData.map(item => item.Pais))];
+    const select = document.getElementById('paisFilter');
+    select.innerHTML = paises.map(p => `<option value="${p}">${p}</option>`).join('');
+    actualizarTiendas();
 }
 
-function updateChart() {
-    const selectedIndices = Array.from(document.querySelectorAll('.store-cb:checked')).map(cb => parseInt(cb.value));
-    const areaVal = document.getElementById('areaFilter').value;
-
-    let filtered = storeData.filter((_, index) => selectedIndices.includes(index));
+function actualizarTiendas() {
+    const paisSeleccionado = document.getElementById('paisFilter').value;
+    const tiendas = rawData.filter(item => item.Pais === paisSeleccionado);
+    const nombresTiendas = [...new Set(tiendas.map(item => item.Tienda))];
     
-    if (areaVal !== 'all') {
-        filtered = filtered.filter(item => item.Area_Comercial === areaVal);
-    }
+    const select = document.getElementById('tiendaFilter');
+    select.innerHTML = nombresTiendas.map(t => `<option value="${t}">${t}</option>`).join('');
+    actualizarGrafico();
+}
 
-    const labels = filtered.map(item => item.Area_Comercial || 'S/N');
-    const m2Data = filtered.map(item => item.m2 || 0);
-    const m3Data = filtered.map(item => item.m3 || 0);
-    const tiendas = filtered.map(item => item.Tienda);
+function actualizarGrafico() {
+    const tiendaSel = document.getElementById('tiendaFilter').value;
+    const metrica = document.getElementById('metricaFilter').value;
+    
+    const dataFiltrada = rawData.filter(item => item.Tienda === tiendaSel);
+    
+    const labels = dataFiltrada.map(item => item.Area_Comercial);
+    const values = dataFiltrada.map(item => item[metrica]);
 
-    if (chartInstance) chartInstance.destroy();
+    if (chart) chart.destroy();
 
-    const ctx = document.getElementById('capexChart').getContext('2d');
-    chartInstance = new Chart(ctx, {
+    const ctx = document.getElementById('lineChart').getContext('2d');
+    chart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
-            datasets: [
-                {
-                    label: 'm²',
-                    data: m2Data,
-                    borderColor: '#ec4899',
-                    backgroundColor: 'rgba(236, 72, 153, 0.1)',
-                    borderWidth: 4,
-                    tension: 0.4,
-                    fill: true,
-                    pointRadius: 6
-                },
-                {
-                    label: 'm³',
-                    data: m3Data,
-                    borderColor: '#14b8a6',
-                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
-                    borderWidth: 4,
-                    tension: 0.4,
-                    fill: true,
-                    pointRadius: 6
-                }
-            ]
+            datasets: [{
+                label: metrica === 'm2' ? 'Metros Cuadrados (m²)' : 'Metros Cúbicos (m³)',
+                data: values,
+                borderColor: '#F15A22',
+                backgroundColor: 'rgba(241, 90, 34, 0.2)',
+                borderWidth: 4,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 6,
+                pointBackgroundColor: '#fff'
+            }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        afterLabel: (context) => `Tienda: ${tiendas[context.dataIndex]}`
-                    }
-                }
-            },
             scales: {
-                x: { 
-                    ticks: { color: '#94a3b8' },
-                    grid: { display: false },
-                    title: { display: true, text: 'ÁREA COMERCIAL', color: '#64748b' }
-                },
-                y: { 
-                    ticks: { color: '#94a3b8' },
-                    grid: { color: 'rgba(255,255,255,0.1)' }
-                }
+                y: { beginAtZero: true, grid: { color: '#333' }, ticks: { color: '#aaa' } },
+                x: { grid: { display: false }, ticks: { color: '#aaa' } }
+            },
+            plugins: {
+                legend: { labels: { color: '#fff', font: { size: 14 } } }
             }
         }
     });
