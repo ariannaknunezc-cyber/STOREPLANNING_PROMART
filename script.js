@@ -7,7 +7,6 @@ document.getElementById('excelInput').addEventListener('change', function(e) {
         const data = new Uint8Array(evt.target.result);
         const workbook = XLSX.read(data, {type: 'array'});
         rawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-        
         if(rawData.length > 0) {
             document.getElementById('dynamic-controls').style.display = 'block';
             logic_initPaises();
@@ -25,18 +24,12 @@ function logic_initPaises() {
 
 function logic_updateStores() {
     const selectedPais = document.getElementById('paisFilter').value;
-    const tiendasDelPais = [...new Set(rawData
-        .filter(item => item.Pais === selectedPais)
-        .map(item => item.Tienda))];
-    
+    const tiendas = [...new Set(rawData.filter(item => item.Pais === selectedPais).map(item => item.Tienda))];
     const checklist = document.getElementById('tiendaChecklist');
-    checklist.innerHTML = tiendasDelPais.map((tienda) => `
-        <label>
-            <input type="checkbox" class="store-cb" value="${tienda}" onchange="logic_renderChart()" checked>
-            ${tienda}
-        </label>
+    
+    checklist.innerHTML = tiendas.map(t => `
+        <label><input type="checkbox" class="store-cb" value="${t}" onchange="logic_renderChart()" checked> ${t}</label>
     `).join('');
-
     logic_renderChart();
 }
 
@@ -51,7 +44,7 @@ function logic_renderChart() {
         return;
     }
 
-    const colorPalette = ['#F15A22', '#38bdf8', '#fbbf24', '#10b981', '#f43f5e', '#a855f7', '#06b6d4'];
+    const colorPalette = ['#F15A22', '#38bdf8', '#fbbf24', '#10b981', '#f43f5e', '#a855f7'];
     const dataForChart = rawData.filter(item => selectedStores.includes(item.Tienda));
     const areasX = [...new Set(dataForChart.map(item => item.Area_Comercial))];
 
@@ -62,22 +55,12 @@ function logic_renderChart() {
             const row = storeRows.find(r => r.Area_Comercial === area);
             return row ? row[metrica] : 0;
         });
-
-        return {
-            label: tienda,
-            data: values,
-            borderColor: color,
-            backgroundColor: color,
-            tension: 0.3,
-            borderWidth: 3,
-            pointRadius: 5
-        };
+        return { label: tienda, data: values, borderColor: color, backgroundColor: color, tension: 0.3, borderWidth: 3 };
     });
 
     legendContainer.innerHTML = datasets.map(ds => `
-        <div class="legend-item" style="display:flex; align-items:center; gap:8px; margin-right:15px; font-size:12px;">
-            <div style="width:12px; height:12px; border-radius:50%; background:${ds.borderColor}"></div>
-            <span style="color:#94a3b8">${ds.label}</span>
+        <div style="display:flex; align-items:center; gap:5px; font-size:12px; color:#94a3b8">
+            <div style="width:10px; height:10px; border-radius:50%; background:${ds.borderColor}"></div> ${ds.label}
         </div>
     `).join('');
 
