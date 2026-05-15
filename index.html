@@ -3,72 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Planning — Promart Homecenter</title>
+    <title>Store Planning — Portal Maestro</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
-<nav class="topbar">
-    <div class="topbar-brand">PROMART <span>STORE PLANNING</span></div>
-    <div class="topbar-nav">
-        <a href="#fichas">Fichas</a>
-        <a href="#revit">Revit BIM</a>
-        <a href="#analisis">Análisis CAPEX</a>
+<nav class="navbar">
+    <div class="logo">PROMART <span>STORE PLANNING</span></div>
+    <div class="menu">
+        <a href="#fichas">01. Fichas</a>
+        <a href="#revit">02. Revit BIM</a>
+        <a href="#acuerdos">03. Acuerdos</a>
+        <a href="#analisis">04. Análisis</a>
     </div>
 </nav>
 
+<header class="hero">
+    <h1>SISTEMA DE GESTIÓN DE <span>ACTIVOS DIGITALES</span></h1>
+    <p>Estandarización Operativa y Análisis de Eficiencia 2026</p>
+</header>
+
 <section id="fichas" class="section">
-    <h2 class="title">01. Fichas <span>Tienda Ideal</span></h2>
-    <div class="cards-grid">
-        <div class="card">
-            <h3>Picada 5.00 HMY</h3>
-            <p>Estándar técnico para tiendas de gran formato.</p>
-            <a href="#" class="btn">Ver Ficha</a>
-        </div>
-        <div class="card">
-            <h3>Picada 7.50 JRM</h3>
-            <p>Estándar técnico para tiendas compactas.</p>
-            <a href="#" class="btn">Ver Ficha</a>
-        </div>
+    <h2 class="section-title">01. Ficha <span>Tienda Ideal</span></h2>
+    <div class="grid-container">
+        <div class="card"><h3>PICADA 5.00</h3><p>PROVEEDOR HMY</p></div>
+        <div class="card"><h3>PICADA 7.50</h3><p>PROVEEDOR JRM</p></div>
+    </div>
+</section>
+
+<section id="revit" class="section gray">
+    <h2 class="section-title">02. Biblioteca <span>Revit BIM</span></h2>
+    <div class="grid-revit">
+        <div class="item">EQUIPAMIENTO HMY</div>
+        <div class="item">EQUIPAMIENTO JRM</div>
+        <div class="item">GÓNDOLAS</div>
+        <div class="item">CARPINTERÍA</div>
+        <div class="item">ELECTRICIDAD</div>
+    </div>
+</section>
+
+<section id="acuerdos" class="section">
+    <h2 class="section-title">03. Acuerdos <span>del Área</span></h2>
+    <div class="acuerdos-box">
+        <p>Este apartado centraliza los lineamientos estratégicos y compromisos establecidos por el equipo:</p>
+        <ul>
+            <li>Estandarización de familias BIM para Revit 2024.</li>
+            <li>Protocolos de actualización de metros cuadrados trimestrales.</li>
+            <li>Alineamiento de criterios de diseño con los objetivos del proyecto.</li>
+        </ul>
     </div>
 </section>
 
 <section id="analisis" class="section dark">
-    <h2 class="title" style="color:white">02. Análisis de <span>Métricas</span></h2>
+    <h2 class="section-title" style="color:white">04. Análisis de <span>Tienda (CAPEX)</span></h2>
     
-    <div class="dashboard">
+    <div class="dashboard-grid">
         <aside class="sidebar">
-            <div class="filter-group">
-                <label>Subir Datos (Excel)</label>
+            <div class="filter-box">
+                <label>Subir Excel Maestro</label>
                 <input type="file" id="excelFile" accept=".xlsx, .xls">
             </div>
 
-            <div id="controls" style="display:none">
-                <div class="filter-group">
-                    <label>Filtrar por País</label>
-                    <select id="paisFilter" onchange="actualizarTiendas()"></select>
+            <div id="dynamic-controls" style="display:none">
+                <div class="filter-box">
+                    <label>Elegir País</label>
+                    <select id="paisSel" onchange="filterStores()"></select>
                 </div>
-
-                <div class="filter-group">
-                    <label>Seleccionar Tienda</label>
-                    <select id="tiendaFilter" onchange="actualizarGrafico()"></select>
+                <div class="filter-box">
+                    <label>Tiendas a Comparar</label>
+                    <div id="store-checklist" class="checklist"></div>
                 </div>
-
-                <div class="filter-group">
-                    <label>Métrica del Gráfico</label>
-                    <select id="metricaFilter" onchange="actualizarGrafico()">
+                <div class="filter-box">
+                    <label>Área Específica</label>
+                    <select id="areaSel"></select>
+                </div>
+                <div class="filter-box">
+                    <label>Ver Métrica</label>
+                    <select id="metricSel">
                         <option value="m2">Metros Cuadrados (m²)</option>
                         <option value="m3">Metros Cúbicos (m³)</option>
                     </select>
                 </div>
+                <button class="btn-update" onclick="updateChart()">Actualizar Gráfico</button>
             </div>
         </aside>
 
-        <main class="chart-container">
-            <canvas id="lineChart"></canvas>
-            <div id="noData" class="placeholder">Cargue un archivo Excel para visualizar</div>
+        <main class="chart-area">
+            <div class="chart-wrapper">
+                <canvas id="mainChart"></canvas>
+            </div>
         </main>
     </div>
 </section>
