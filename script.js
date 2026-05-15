@@ -17,7 +17,6 @@ document.getElementById('excelInput').addEventListener('change', function(e) {
 });
 
 function logic_initPaises() {
-    // Captura todos los países únicos del Excel
     const paises = [...new Set(rawData.map(item => item.Pais))];
     const select = document.getElementById('paisFilter');
     select.innerHTML = paises.map(p => `<option value="${p}">${p}</option>`).join('');
@@ -26,8 +25,6 @@ function logic_initPaises() {
 
 function logic_updateStores() {
     const selectedPais = document.getElementById('paisFilter').value;
-    
-    // FILTRADO CORRECTO: Encuentra todas las tiendas que pertenecen al país seleccionado
     const tiendasDelPais = [...new Set(rawData
         .filter(item => item.Pais === selectedPais)
         .map(item => item.Tienda))];
@@ -55,15 +52,12 @@ function logic_renderChart() {
     }
 
     const colorPalette = ['#F15A22', '#38bdf8', '#fbbf24', '#10b981', '#f43f5e', '#a855f7', '#06b6d4'];
-    
-    // Eje X: Áreas Comerciales únicas de las tiendas seleccionadas
     const dataForChart = rawData.filter(item => selectedStores.includes(item.Tienda));
     const areasX = [...new Set(dataForChart.map(item => item.Area_Comercial))];
 
     const datasets = selectedStores.map((tienda, i) => {
         const color = colorPalette[i % colorPalette.length];
         const storeRows = dataForChart.filter(r => r.Tienda === tienda);
-        
         const values = areasX.map(area => {
             const row = storeRows.find(r => r.Area_Comercial === area);
             return row ? row[metrica] : 0;
@@ -80,16 +74,14 @@ function logic_renderChart() {
         };
     });
 
-    // Crear Leyenda Manual con Colores
     legendContainer.innerHTML = datasets.map(ds => `
-        <div class="legend-item">
-            <div class="legend-color" style="background:${ds.borderColor}"></div>
-            ${ds.label}
+        <div class="legend-item" style="display:flex; align-items:center; gap:8px; margin-right:15px; font-size:12px;">
+            <div style="width:12px; height:12px; border-radius:50%; background:${ds.borderColor}"></div>
+            <span style="color:#94a3b8">${ds.label}</span>
         </div>
     `).join('');
 
     if (chartInstance) chartInstance.destroy();
-
     const ctx = document.getElementById('mainChart').getContext('2d');
     chartInstance = new Chart(ctx, {
         type: 'line',
